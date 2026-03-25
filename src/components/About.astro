@@ -1,0 +1,107 @@
+---
+// About section — short paragraph, status, location, goals
+---
+
+<section id="about" class="about">
+  <div class="container">
+    <h2 class="section-label">// ABOUT</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          I'm a PhD student in Mechanical Engineering at Georgia Tech, working at
+          the intersection of autonomous systems, flight controls, and
+          hardware&nbsp;design. I build things that operate in unpredictable
+          environments — from solar-powered seaplanes to combat robots — and I
+          care about the full stack from control theory to fabrication.
+        </p>
+      </div>
+      <div class="about-status">
+        <div class="status-row">
+          <span class="status-key">STATUS</span>
+          <span class="status-val active">PhD Candidate — Active</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">LOCATION</span>
+          <span class="status-val">Atlanta, GA</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">AFFILIATION</span>
+          <span class="status-val">Georgia Institute of Technology</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">SEEKING</span>
+          <span class="status-val">Research &amp; industry collaborations in autonomy, controls, and robotics</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    padding: var(--space-2xl) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-xl);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .about-text p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--color-text);
+  }
+
+  .about-status {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .status-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .status-key {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .status-val {
+    font-size: 0.95rem;
+    color: var(--color-text-bright);
+  }
+
+  .status-val.active {
+    color: var(--color-status-active);
+  }
+
+  @media (max-width: 768px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

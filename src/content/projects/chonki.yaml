@@ -1,0 +1,24 @@
+# Chonki — Combat Robot
+# 2× NHRL Champion, #1 world ranking
+
+title: "Chonki"
+status: "Complete"
+domain: "Combat Robotics"
+description: "Two-time NHRL champion combat robot ranked #1 in the world with over 50 million views across social media."
+order: 4
+tags:
+  - combat-robotics
+  - NHRL
+  - champion
+  - hardware
+
+metrics:
+  - label: "Titles"
+    value: "2× NHRL Champion"
+  - label: "Ranking"
+    value: "#1 World"
+  - label: "Views"
+    value: "50M+"
+
+# Media
+video: "https://www.youtube.com/embed/CkGYSpqJTt8"

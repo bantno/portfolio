@@ -1,0 +1,199 @@
+---
+// Hero section — name, role, stat chips, CTA buttons, corner readout
+---
+
+<section class="hero">
+  <!-- Corner status readout -->
+  <div class="readout">
+    <span>33.7756°N 84.3963°W</span>
+    <span>SYS:NOMINAL</span>
+    <span>STATUS:ACTIVE</span>
+  </div>
+
+  <div class="hero-inner container">
+    <p class="hero-tag">GROUND CONTROL STATION</p>
+    <h1 class="hero-name">Brian Epstein</h1>
+    <p class="hero-role">
+      Autonomous Systems &amp; Controls · Hardware That Works in the Real World
+    </p>
+
+    <div class="stat-chips">
+      <div class="chip">
+        <span class="chip-value">4.00</span>
+        <span class="chip-label">GPA</span>
+      </div>
+      <div class="chip">
+        <span class="chip-value">2×</span>
+        <span class="chip-label">NHRL Champion</span>
+      </div>
+      <div class="chip">
+        <span class="chip-value">50M+</span>
+        <span class="chip-label">Views</span>
+      </div>
+      <div class="chip">
+        <span class="chip-value">+50%</span>
+        <span class="chip-label">Survivability Gain</span>
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      <a href="#contact" class="btn btn-primary">Contact</a>
+      <!-- Replace href with actual resume PDF path in public/ -->
+      <a href="/resume.pdf" class="btn btn-secondary">Resume</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 56px;
+    overflow: hidden;
+  }
+
+  /* Subtle grid background */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(232, 197, 71, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232, 197, 71, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .readout {
+    position: absolute;
+    top: 72px;
+    right: var(--space-lg);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    opacity: 0.6;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    letter-spacing: 0.2em;
+    margin-bottom: var(--space-md);
+  }
+
+  .hero-name {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 800;
+    color: var(--color-text-bright);
+    line-height: 1.1;
+    margin-bottom: var(--space-md);
+  }
+
+  .hero-role {
+    font-size: 1.1rem;
+    color: var(--color-text);
+    max-width: 600px;
+    margin-bottom: var(--space-xl);
+  }
+
+  .stat-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+
+  .chip {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-sm) var(--space-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 110px;
+  }
+
+  .chip-value {
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
+  .chip-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .btn-primary:hover {
+    background: var(--color-text-bright);
+    color: var(--color-bg);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border-color: var(--color-border-bright);
+    color: var(--color-text);
+  }
+  .btn-secondary:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 600px) {
+    .readout {
+      display: none;
+    }
+    .stat-chips {
+      gap: var(--space-sm);
+    }
+    .chip {
+      min-width: 90px;
+      padding: var(--space-xs) var(--space-sm);
+    }
+    .chip-value {
+      font-size: 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,28 @@
+# Solar-Powered Autonomous Seaplane
+# Presented at AIAA AVIATION 2024
+
+title: "Solar-Powered Autonomous Seaplane"
+status: "Active"
+domain: "Aerial Autonomy"
+description: "Autonomous solar-electric seaplane designed for persistent maritime surveillance with water-landing survivability."
+order: 1
+tags:
+  - autonomy
+  - solar
+  - seaplane
+  - maritime
+  - AIAA
+
+metrics:
+  - label: "Mass"
+    value: "3.0 kg"
+  - label: "Cruise"
+    value: "150W @ 18 m/s"
+  - label: "Survivability"
+    value: "+50%"
+
+# Media — uncomment and replace URLs when assets are ready
+# photo: "images/seaplane.jpg"
+# cad_embed: "https://your-onshape-or-grabcad-embed-url"
+paper_url: "https://arc.aiaa.org/doi/10.2514/6.2024-XXXXX"
+conference: "AIAA AVIATION 2024"

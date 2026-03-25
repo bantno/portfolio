@@ -1,0 +1,115 @@
+/* ═══════════════════════════════════════════════════════════
+   THEME — GCS Design Language
+   All colors, fonts, and spacing tokens live here.
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Palette ─────────────────────────────────────────────── */
+  --color-bg:              #0a0e1a;
+  --color-bg-raised:       #111627;
+  --color-bg-card:         #141929;
+  --color-bg-card-hover:   #1a2035;
+  --color-border:          #1e2640;
+  --color-border-bright:   #2a3558;
+  --color-text:            #c8cdd8;
+  --color-text-muted:      #6b7394;
+  --color-text-bright:     #e8ecf4;
+  --color-accent:          #e8c547;
+  --color-accent-dim:      #b89d2f;
+  --color-status-active:   #47e878;
+  --color-status-complete: #4788e8;
+  --color-status-dev:      #e8a647;
+
+  /* ── Typography ──────────────────────────────────────────── */
+  --font-mono:      "JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", monospace;
+  --font-heading:   "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-body:      "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  /* ── Spacing & layout ───────────────────────────────────── */
+  --space-xs:  0.25rem;
+  --space-sm:  0.5rem;
+  --space-md:  1rem;
+  --space-lg:  2rem;
+  --space-xl:  4rem;
+  --space-2xl: 6rem;
+
+  --max-width: 1200px;
+  --radius:    6px;
+  --radius-lg: 12px;
+}
+
+/* ── Reset & base ──────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
+/* ── Utility ───────────────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: var(--space-lg);
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: var(--color-text-bright);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-bright);
+  border-radius: 4px;
+}
+
+/* ── Fade-in animation (used on project cards) ─────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}

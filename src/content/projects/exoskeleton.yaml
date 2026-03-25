@@ -1,0 +1,23 @@
+# Pneumatic Lower Limb Exoskeleton
+# Motor control with artificial muscle actuation
+
+title: "Pneumatic Lower Limb Exoskeleton"
+status: "Complete"
+domain: "Manipulation"
+description: "Pneumatically actuated knee exoskeleton prototype using artificial muscle control for lower limb assistance."
+order: 6
+tags:
+  - exoskeleton
+  - pneumatic
+  - artificial-muscle
+  - motor-control
+  - biomechanics
+
+metrics:
+  - label: "Actuation"
+    value: "Pneumatic Muscle"
+  - label: "Joint"
+    value: "Knee Prototype"
+
+# Media — uncomment and replace URLs when assets are ready
+# photo: "images/exoskeleton.jpg"

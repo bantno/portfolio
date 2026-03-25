@@ -1,0 +1,22 @@
+# BattleBox — Combat Robotics Arena
+# GT Student Foundation funded
+
+title: "BattleBox"
+status: "In Development"
+domain: "Combat Robotics"
+description: "Shipping-container combat robotics arena supporting 12 lb and 30 lb weight classes, funded by the GT Student Foundation."
+order: 5
+tags:
+  - combat-robotics
+  - arena
+  - fabrication
+  - Georgia-Tech
+
+metrics:
+  - label: "Weight Classes"
+    value: "12 lb + 30 lb"
+  - label: "Platform"
+    value: "Shipping Container"
+
+# Media — uncomment and replace URLs when assets are ready
+# photo: "images/battlebox.jpg"

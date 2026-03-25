@@ -1,0 +1,72 @@
+---
+// Minimal top nav — monospace GCS aesthetic
+---
+
+<nav class="nav">
+  <div class="nav-inner container">
+    <a href="#" class="nav-logo">GCS://EPSTEIN</a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#systems">Systems</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(10, 14, 26, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .nav-logo {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.05em;
+  }
+  .nav-logo:hover {
+    color: var(--color-accent);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: var(--space-lg);
+  }
+
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover {
+    color: var(--color-text-bright);
+  }
+
+  @media (max-width: 600px) {
+    .nav-links {
+      gap: var(--space-md);
+    }
+    .nav-links a {
+      font-size: 0.7rem;
+    }
+  }
+</style>

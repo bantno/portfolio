@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+import ProjectCard from "./ProjectCard.astro";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<section id="systems" class="systems">
+  <div class="container">
+    <h2 class="section-label">// SYSTEMS</h2>
+    <div class="card-grid">
+      {projects.map((project, i) => (
+        <ProjectCard {...project.data} index={i} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Intersection Observer for fade-in animation on scroll
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("fade-in");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+
+  document.querySelectorAll(".card").forEach((card) => {
+    // Remove the class so the observer can re-add it when visible
+    card.classList.remove("fade-in");
+    observer.observe(card);
+  });
+</script>
+
+<style>
+  .systems {
+    padding: var(--space-2xl) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-xl);
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: var(--space-lg);
+  }
+
+  @media (max-width: 480px) {
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
