@@ -1,0 +1,46 @@
+---
+title: "Quadcopter Slung Load Input Shaping"
+summary: "Input shaping control for slung load oscillation suppression on a PX4 quadcopter with ROS2 offboard control."
+status: "Complete"
+domain: "Controls"
+tier: standard
+featured: true
+order: 6
+date_range: "August – December 2023"
+tags:
+  - controls
+  - ROS2
+  - PX4
+  - simulation
+metrics:
+  - label: "Control"
+    value: "Input Shaping"
+  - label: "Validation"
+    value: "SITL → Hardware"
+---
+import { AnnotatedFigure } from '../../components/react/AnnotatedFigure';
+import Figure from '../../components/Figure.astro';
+
+## Problem & Approach
+
+Slung loads cause problematic oscillations during quadcopter flight — the pendulum dynamics of a suspended payload excite the vehicle's attitude controller, degrading tracking performance and risking instability during aggressive maneuvers.
+
+Implemented input shaping on a slung load quadcopter using PX4-ROS2 offboard control. The input shaper modifies the commanded trajectory to suppress the payload's natural frequency, reducing oscillation amplitude without requiring payload state feedback.
+
+SITL testing in Gazebo reproduced the quadcopter and slung load dynamics, validated with real-world flight testing. The same ROS2 offboard control node ran in both environments.
+
+## Control Architecture
+
+<AnnotatedFigure
+  client:visible
+  src="/images/slung-load/placeholder-slung-load-arch.svg"
+  alt="Slung load control architecture"
+  hotspots={[
+    { x: 15, y: 50, label: "Trajectory command", description: "Waypoint sequence from mission planner — input to the shaping filter" },
+    { x: 40, y: 50, label: "Input shaper", description: "ZVD shaper tuned to the slung load natural frequency — splits each impulse into three timed sub-impulses" },
+    { x: 65, y: 35, label: "PX4 offboard", description: "ROS2 offboard control node sends shaped setpoints to PX4 via MAVROS" },
+    { x: 85, y: 50, label: "Quadcopter + payload", description: "Physical system: quadcopter with cable-suspended payload" }
+  ]}
+/>
+
+<Figure src="/images/slung-load/placeholder-input-shaping-comparison.svg" alt="Response comparison with and without input shaping" caption="Payload swing angle over time: unshaped command (red) vs input-shaped command (blue)" number={1} />

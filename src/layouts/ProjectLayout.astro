@@ -1,0 +1,316 @@
+---
+import Base from "./Base.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title: string;
+  domain: string;
+  status: "Active" | "Complete" | "In Development";
+  date_range: string;
+  tags: string[];
+  metrics: { label: string; value: string }[];
+  tier: "flagship" | "featured" | "standard" | "brief";
+  paper_url?: string;
+  conference?: string;
+}
+
+const { title, domain, status, date_range, tags, metrics, tier, paper_url, conference } = Astro.props;
+
+const statusClass = {
+  Active: "active",
+  Complete: "complete",
+  "In Development": "dev",
+}[status];
+---
+
+<Base title={`${title} — Brian Epstein`}>
+  <Nav />
+  <main class="project-page">
+    <!-- Project header -->
+    <header class="project-header container">
+      <div class="header-meta">
+        <span class={`status-badge ${statusClass}`}>{status}</span>
+        <span class="domain-label">{domain}</span>
+        <span class="date-label">{date_range}</span>
+      </div>
+      <h1 class="project-title">{title}</h1>
+
+      <!-- Metrics strip -->
+      <div class="metrics-strip">
+        {metrics.map((m) => (
+          <div class="metric">
+            <span class="metric-value">{m.value}</span>
+            <span class="metric-label">{m.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <!-- Tags -->
+      <div class="project-tags">
+        {tags.map((tag) => (
+          <span class="tag">{tag}</span>
+        ))}
+      </div>
+
+      {(paper_url || conference) && (
+        <div class="project-links">
+          {paper_url && (
+            <a href={paper_url} target="_blank" rel="noopener noreferrer" class="paper-link">
+              Paper ↗
+            </a>
+          )}
+          {conference && <span class="conference-label">{conference}</span>}
+        </div>
+      )}
+    </header>
+
+    {/* Sticky sub-nav for flagship */}
+    {tier === "flagship" && (
+      <nav class="section-nav container" aria-label="Page sections">
+        <a href="#mission-planning">Mission & Energy</a>
+        <a href="#vehicle-design">Vehicle Design</a>
+        <a href="#build-test">Build & Test</a>
+        <a href="#team-iteration">Team & Iteration</a>
+      </nav>
+    )}
+
+    <!-- MDX content -->
+    <article class="project-content container">
+      <slot />
+    </article>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .project-page {
+    padding-top: 56px;
+  }
+
+  .project-header {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    flex-wrap: wrap;
+  }
+
+  .status-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+  .status-badge.active {
+    background: rgba(71, 232, 120, 0.1);
+    color: var(--color-status-active);
+    border: 1px solid rgba(71, 232, 120, 0.25);
+  }
+  .status-badge.complete {
+    background: rgba(71, 136, 232, 0.1);
+    color: var(--color-status-complete);
+    border: 1px solid rgba(71, 136, 232, 0.25);
+  }
+  .status-badge.dev {
+    background: rgba(232, 166, 71, 0.1);
+    color: var(--color-status-dev);
+    border: 1px solid rgba(232, 166, 71, 0.25);
+  }
+
+  .domain-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .date-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+  }
+
+  .project-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 800;
+    color: var(--color-text-bright);
+    line-height: 1.1;
+    margin-bottom: var(--space-lg);
+  }
+
+  .metrics-strip {
+    display: flex;
+    gap: var(--space-lg);
+    padding: var(--space-sm) 0;
+    margin-bottom: var(--space-md);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .metric {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .metric-value {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
+  .metric-label {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    background: var(--color-bg-raised);
+    border: 1px solid var(--color-border);
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  .project-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .paper-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .conference-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+  }
+
+  /* Section nav for flagship */
+  .section-nav {
+    position: sticky;
+    top: 56px;
+    z-index: 50;
+    display: flex;
+    gap: var(--space-lg);
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+    background: rgba(10, 14, 26, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+    overflow-x: auto;
+  }
+
+  .section-nav a {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .section-nav a:hover {
+    color: var(--color-accent);
+  }
+
+  /* Content area */
+  .project-content {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-2xl);
+    max-width: 800px;
+  }
+
+  .project-content :global(h2) {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--color-text-bright);
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-md);
+  }
+
+  .project-content :global(h3) {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-text-bright);
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+  }
+
+  .project-content :global(p) {
+    margin-bottom: var(--space-md);
+    line-height: 1.7;
+  }
+
+  .project-content :global(strong) {
+    color: var(--color-text-bright);
+    font-weight: 600;
+  }
+
+  .project-content :global(hr) {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: var(--space-xl) 0;
+  }
+
+  .project-content :global(a.design-doc-link) {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius);
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    margin: var(--space-lg) 0;
+  }
+  .project-content :global(a.design-doc-link:hover) {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  @media (max-width: 768px) {
+    .section-nav {
+      gap: var(--space-md);
+      padding-inline: var(--space-md);
+    }
+    .metrics-strip {
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+  }
+</style>

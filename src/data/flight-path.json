@@ -1,0 +1,20 @@
+[
+  { "x": 0, "y": 0, "altitude": 0, "airspeed": 0, "label": "Start position" },
+  { "x": 30, "y": 5, "altitude": 0, "airspeed": 8, "label": "Takeoff roll" },
+  { "x": 60, "y": 10, "altitude": 0.5, "airspeed": 12, "label": "Liftoff (100 ft run)" },
+  { "x": 100, "y": 20, "altitude": 8, "airspeed": 15, "label": "Initial climb" },
+  { "x": 160, "y": 50, "altitude": 25, "airspeed": 18, "label": "Cruise stabilized at 18 m/s" },
+  { "x": 220, "y": 100, "altitude": 30, "airspeed": 18 },
+  { "x": 300, "y": 160, "altitude": 30, "airspeed": 18, "label": "Survey leg 1 start" },
+  { "x": 380, "y": 180, "altitude": 30, "airspeed": 17 },
+  { "x": 420, "y": 240, "altitude": 30, "airspeed": 18 },
+  { "x": 380, "y": 310, "altitude": 30, "airspeed": 18, "label": "Survey leg 2" },
+  { "x": 300, "y": 350, "altitude": 28, "airspeed": 17 },
+  { "x": 220, "y": 330, "altitude": 25, "airspeed": 16, "label": "Return leg" },
+  { "x": 160, "y": 280, "altitude": 20, "airspeed": 16 },
+  { "x": 100, "y": 220, "altitude": 15, "airspeed": 15, "label": "Descent initiated" },
+  { "x": 60, "y": 160, "altitude": 8, "airspeed": 14 },
+  { "x": 30, "y": 120, "altitude": 3, "airspeed": 12, "label": "Final approach" },
+  { "x": 10, "y": 100, "altitude": 0.5, "airspeed": 10 },
+  { "x": 0, "y": 95, "altitude": 0, "airspeed": 0, "label": "Water landing" }
+]

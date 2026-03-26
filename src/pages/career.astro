@@ -1,0 +1,199 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import TimelineEntry from "../components/TimelineEntry.astro";
+---
+
+<Base title="Career — Brian Epstein">
+  <Nav />
+  <main class="career-page">
+    <div class="container">
+      <h1 class="page-title">// CAREER TIMELINE</h1>
+      <p class="page-subtitle">Georgia Tech research and industry experience, 2018–2026.</p>
+
+      <div class="timeline">
+        <!-- Track labels for desktop -->
+        <div class="track-headers">
+          <span class="track-label track-label-academic">Georgia Tech</span>
+          <span class="track-label track-label-industry">Industry</span>
+        </div>
+
+        <div class="timeline-grid">
+          <!-- Left column: Academic -->
+          <div class="timeline-track academic-track">
+            <TimelineEntry
+              title="Graduate Researcher — Hypersonic Vehicles"
+              org="Georgia Tech, UCAH"
+              dateRange="Aug 2025 – Present"
+              description="Kalman filter sensor fusion for control surface failure estimation. UCAH-funded."
+              track="academic"
+            />
+            <TimelineEntry
+              title="Graduate Researcher — Solar Seaplane"
+              org="Georgia Tech, Aerial Robotics Lab"
+              dateRange="Aug 2023 – Present"
+              description="Developing solar-powered seaplane UAV for autonomous ocean monitoring. MDP flight planning, aerodynamic analysis, and flight testing."
+              track="academic"
+              projectLink="/projects/seaplane"
+            />
+            <TimelineEntry
+              title="Graduate Researcher — Drone Capture System"
+              org="Georgia Tech, Aerial Robotics Lab"
+              dateRange="Aug 2022 – May 2023"
+              description="Full-stack autonomy for aerial interceptor drone. ROS2 control stack, RRT* path planning, and mechanical grasping payload."
+              track="academic"
+              projectLink="/projects/drone-capture"
+            />
+            <TimelineEntry
+              title="Undergraduate Researcher"
+              org="Georgia Tech, Aerial Robotics Lab"
+              dateRange="Jan 2022 – May 2022"
+              description="ROS2 nodes for autonomous quadcopter landing. IR camera gimbal system for precision tracking."
+              track="academic"
+            />
+            <TimelineEntry
+              title="Undergraduate Researcher"
+              org="Georgia Tech, Adaptive Robotic Manipulation Lab"
+              dateRange="Aug 2020 – May 2021"
+              description="Low-level motor control for pneumatic knee exoskeleton. Published at Design of Medical Devices Conference 2021."
+              track="academic"
+            />
+            <TimelineEntry
+              title="RoboJackets — Team Mentor"
+              org="Georgia Tech RoboJackets"
+              dateRange="2021 – Present"
+              description="Mentoring undergraduate combat robotics teams on design, fabrication, and competition strategy."
+              track="academic"
+              projectLink="/projects/chonki"
+            />
+            <TimelineEntry
+              title="RoboJackets — Team Lead"
+              org="Georgia Tech RoboJackets"
+              dateRange="2020 – 2021"
+              description="Led the competitive combat robotics team. Oversaw design, manufacturing, and competition logistics."
+              track="academic"
+            />
+            <TimelineEntry
+              title="RoboJackets — Sponsorship Chair"
+              org="Georgia Tech RoboJackets"
+              dateRange="2020 – 2021"
+              description="Managed corporate sponsorships and partnerships for the organization."
+              track="academic"
+            />
+            <TimelineEntry
+              title="RoboJackets — Mech Training Lead / 3lb Mentor"
+              org="Georgia Tech RoboJackets"
+              dateRange="2019 – 2020"
+              description="Trained new members on mechanical design and fabrication. Mentored 3lb combat robot teams."
+              track="academic"
+            />
+          </div>
+
+          <!-- Right column: Industry -->
+          <div class="timeline-track industry-track">
+            <TimelineEntry
+              title="R&D Engineering Intern"
+              org="JLG Industries"
+              dateRange="May – Aug 2022"
+              description="Vision-based depth perception with RANSAC/Open3D point cloud processing. Autonomous powerwashing demo with 6DOF manipulator and ROS2."
+              track="industry"
+            />
+            <TimelineEntry
+              title="Robotic Manufacturing Intern"
+              org="Eaton Corporation"
+              dateRange="May – Aug 2021"
+              description="Programmed Fanuc robot + CNC lathe automation cell. Achieved 75% cycle time reduction and $40K annual savings."
+              track="industry"
+            />
+            <TimelineEntry
+              title="Engineering Intern"
+              org="East West Manufacturing"
+              dateRange="Jan – May 2020"
+              description="Eddy current braking prototype, vacuum thermoforming table, hemi-anechoic chamber design and build."
+              track="industry"
+            />
+            <TimelineEntry
+              title="Manufacturing Engineering Intern"
+              org="Lockheed Martin"
+              dateRange="May – Aug 2019"
+              description="Smart locking fixture for missile assembly. Reduced defect rate and delivered $16K under external quote."
+              track="industry"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .career-page {
+    padding-top: calc(56px + var(--space-xl));
+    padding-bottom: var(--space-2xl);
+  }
+
+  .page-title {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-sm);
+  }
+
+  .page-subtitle {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xl);
+  }
+
+  .track-headers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-lg);
+  }
+
+  .track-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid;
+  }
+
+  .track-label-academic {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .track-label-industry {
+    color: var(--color-status-complete);
+    border-color: var(--color-status-complete);
+  }
+
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+  }
+
+  @media (max-width: 768px) {
+    .track-headers {
+      grid-template-columns: 1fr;
+      gap: var(--space-sm);
+    }
+    .timeline-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+    .industry-track {
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-lg);
+    }
+  }
+</style>

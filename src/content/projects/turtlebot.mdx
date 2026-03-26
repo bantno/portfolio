@@ -1,0 +1,36 @@
+---
+title: "Turtlebot Maze Navigation"
+summary: "Autonomous maze navigation using computer vision for sign detection, validated from Gazebo simulation to real hardware."
+status: "Complete"
+domain: "Autonomous Navigation"
+tier: standard
+featured: true
+order: 5
+date_range: "January – May 2023"
+tags:
+  - computer vision
+  - ROS2
+  - simulation
+  - Gazebo
+  - autonomous navigation
+metrics:
+  - label: "Pipeline"
+    value: "Vision → Nav"
+  - label: "Validation"
+    value: "Sim-to-Real"
+---
+import Figure from '../../components/Figure.astro';
+
+## Problem & Approach
+
+Implemented autonomous maze navigation for a Turtlebot using computer vision to detect and interpret directional signs. The perception pipeline processes camera frames to detect signs, classify their directional content, and feed navigation decisions to the motion planner.
+
+The system was developed entirely in Gazebo simulation, then validated on real Turtlebot hardware — the same perception and navigation pipeline running in both environments with no code changes. This sim-to-real transfer validated the robustness of the vision processing pipeline against real-world lighting variation and sensor noise.
+
+## Evidence
+
+<Figure src="/images/turtlebot/placeholder-turtlebot-sim.svg" alt="Turtlebot navigating maze in Gazebo" caption="Gazebo simulation environment with directional signs placed at decision points" number={1} />
+
+<Figure src="/images/turtlebot/placeholder-vision-pipeline.svg" alt="Vision pipeline architecture" caption="Camera input → sign detection → classification → navigation decision" number={2} />
+
+The key message: identical code running in simulation and on hardware. The Gazebo environment closely matched real-world conditions — camera FOV, sign placement distances, and lighting — so the trained detection pipeline transferred without retuning.

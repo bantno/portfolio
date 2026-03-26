@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   THEME — GCS Design Language
+   THEME — Portfolio Design Language
    All colors, fonts, and spacing tokens live here.
    ═══════════════════════════════════════════════════════════ */
 
@@ -19,6 +19,12 @@
   --color-status-active:   #47e878;
   --color-status-complete: #4788e8;
   --color-status-dev:      #e8a647;
+
+  /* ── Interactive component colors (set your final values) ── */
+  --color-user-policy:     #ff6b6b;
+  --color-optimal-policy:  #51cf66;
+  --color-predicted:       #748ffc;
+  --color-measured:        #ffd43b;
 
   /* ── Typography ──────────────────────────────────────────── */
   --font-mono:      "JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", monospace;

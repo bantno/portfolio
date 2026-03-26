@@ -1,0 +1,56 @@
+[
+  {
+    "id": "full-vehicle",
+    "label": "Complete Vehicle",
+    "svgPath": "/images/layers/seaplane/full-vehicle.svg",
+    "annotations": [
+      { "x": 50, "y": 15, "text": "3.0 kg all-up weight, 2.4 m wingspan" },
+      { "x": 75, "y": 70, "text": "Amphibious configuration — flies and floats" }
+    ]
+  },
+  {
+    "id": "airframe",
+    "label": "Airframe & Wing Structure",
+    "svgPath": "/images/layers/seaplane/airframe.svg",
+    "annotations": [
+      { "x": 50, "y": 30, "text": "High aspect ratio wing for efficient cruise at low Reynolds numbers" },
+      { "x": 30, "y": 65, "text": "Carbon fiber spar with foam core — strength-to-weight optimized" }
+    ]
+  },
+  {
+    "id": "solar",
+    "label": "Solar Panels & Wing Rotation",
+    "svgPath": "/images/layers/seaplane/solar.svg",
+    "annotations": [
+      { "x": 55, "y": 25, "text": "CIGS thin-film chosen over rigid panels for conformal mounting and weight savings" },
+      { "x": 25, "y": 55, "text": "Spanwise wing rotation mechanism enables solar tracking during water rest" }
+    ]
+  },
+  {
+    "id": "hull",
+    "label": "Hull & Flotation Geometry",
+    "svgPath": "/images/layers/seaplane/hull.svg",
+    "annotations": [
+      { "x": 45, "y": 45, "text": "Metacentric height drove this hull cross-section for roll stability" },
+      { "x": 70, "y": 70, "text": "Step hull reduces hydrodynamic drag during takeoff run" }
+    ]
+  },
+  {
+    "id": "avionics",
+    "label": "Avionics & Power System",
+    "svgPath": "/images/layers/seaplane/avionics.svg",
+    "annotations": [
+      { "x": 40, "y": 40, "text": "PX4 flight controller with custom mixer for seaplane control surfaces" },
+      { "x": 65, "y": 60, "text": "MPPT controller + BMS manages solar charge and battery health autonomously" }
+    ]
+  },
+  {
+    "id": "payload",
+    "label": "Payload Bay",
+    "svgPath": "/images/layers/seaplane/payload.svg",
+    "annotations": [
+      { "x": 50, "y": 50, "text": "Modular payload bay — camera, sensors, or sampling equipment" },
+      { "x": 30, "y": 75, "text": "CG-balanced mounting to maintain flight envelope across payload configs" }
+    ]
+  }
+]

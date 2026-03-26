@@ -1,0 +1,47 @@
+[
+  {
+    "id": "full-robot",
+    "label": "Complete Robot",
+    "svgPath": "/images/layers/chonki/full-robot.svg",
+    "annotations": [
+      { "x": 50, "y": 20, "text": "45 lb featherweight class — maximum weight fully loaded" },
+      { "x": 70, "y": 65, "text": "Low center of gravity for stability under weapon impacts" }
+    ]
+  },
+  {
+    "id": "armor",
+    "label": "Armor & Shell",
+    "svgPath": "/images/layers/chonki/armor.svg",
+    "annotations": [
+      { "x": 40, "y": 30, "text": "AR500 hardened steel in high-impact zones — weapon-facing surfaces" },
+      { "x": 65, "y": 55, "text": "Aluminum side panels save 3 lbs reallocated to drivetrain" }
+    ]
+  },
+  {
+    "id": "weapon",
+    "label": "Weapon System",
+    "svgPath": "/images/layers/chonki/weapon.svg",
+    "annotations": [
+      { "x": 50, "y": 35, "text": "Weapon mass budget vs. armor coverage — the core tradeoff in combat robotics" },
+      { "x": 30, "y": 60, "text": "Brushless outrunner motor sized for target tip speed and stored energy" }
+    ]
+  },
+  {
+    "id": "drivetrain",
+    "label": "Drivetrain",
+    "svgPath": "/images/layers/chonki/drivetrain.svg",
+    "annotations": [
+      { "x": 35, "y": 45, "text": "Gearing tuned for pushing power — critical in control-style matchups" },
+      { "x": 65, "y": 50, "text": "Reinforced gearboxes after early-season catastrophic failures" }
+    ]
+  },
+  {
+    "id": "electronics",
+    "label": "Electronics",
+    "svgPath": "/images/layers/chonki/electronics.svg",
+    "annotations": [
+      { "x": 45, "y": 40, "text": "ESCs and receiver mounted in shock-isolated compartment" },
+      { "x": 60, "y": 65, "text": "LiPo battery pack with redundant power cutoff for safety" }
+    ]
+  }
+]

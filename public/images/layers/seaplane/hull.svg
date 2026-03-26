@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <path d="M80,160 L520,160 L480,300 Q300,340 120,300 Z" fill="#00008B" fill-opacity="0.3" stroke="#00008B" stroke-width="2"/>
+  <text x="300" y="220" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#00008B">Hull</text>
+  <text x="300" y="260" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" fill="#888">placeholder</text>
+</svg>

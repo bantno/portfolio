@@ -1,0 +1,75 @@
+---
+title: "Chonki"
+summary: "Two-time NHRL champion combat robot ranked #1 in the world with 50M+ social media views."
+status: "Complete"
+domain: "Combat Robotics"
+tier: featured
+featured: true
+order: 2
+date_range: "2019 – Present"
+tags:
+  - combat robotics
+  - mechanical design
+  - fabrication
+  - leadership
+metrics:
+  - label: "Titles"
+    value: "2× NHRL Champion"
+  - label: "Ranking"
+    value: "#1 World"
+  - label: "Views"
+    value: "50M+"
+video: "https://www.youtube.com/embed/CkGYSpqJTt8"
+---
+import { ExplodedAssembly } from '../../components/react/ExplodedAssembly';
+import ResultProof from '../../components/ResultProof.astro';
+import Figure from '../../components/Figure.astro';
+import chonkiLayers from '../../data/chonki-layers.json';
+
+<Figure src="/images/chonki/Chonkiv Hero.png" alt="Chonkiv combat robot" caption="Chonkiv — 2× NHRL Champion, #1 in the World" wide={true} />
+
+## The Challenge
+
+Design and build a competitive 45 lb combat robot within a collegiate team, iterating across multiple competition seasons at NHRL — the premier US combat robotics league.
+
+## Approach
+
+Designed and fabricated a 45 lb featherweight combat robot through iterative design cycles spanning weapon systems, armor, and drivetrain optimization. Held key leadership roles over 6 years in Georgia Tech's RoboJackets: Mechanical Training Lead (2019–2020), 3 lb Mentor (2019–2020), Sponsorship Chair (2020–2021), Team Lead (2020–2021), and Team Mentor (2021–Present).
+
+Each competition season drove redesign: weapon geometry changes to improve bite and energy storage, armor material and thickness tradeoffs to survive increasingly powerful opponents, and drivetrain gearing adjustments for the right balance of speed and pushing power.
+
+## Evidence
+
+<Figure src="/images/chonki/chonkiv_standard_config-2025-worlds.JPG" alt="Chonkiv in standard configuration at 2025 Worlds" caption="Chonkiv in standard configuration at 2025 NHRL World Championship" number={1} />
+
+<Figure src="/images/chonki/shuffler_pod.png" alt="Chonkiv shuffler drivetrain CAD model" caption="Full CAD model of the shuffler drivetrain pod" number={2} />
+
+<Figure src="/images/chonki/chonkiv_electronics_layout-picture.png" alt="Chonkiv internal electronics layout" caption="Electronics layout — drive motors, weapon motor, batteries, and ESCs" number={3} />
+
+<ExplodedAssembly client:visible layers={chonkiLayers} title="Chonki Assembly" />
+
+<ResultProof metrics={[
+  { metric: "NHRL's 1st Collegiate Featherweight Champion", context: "First collegiate team to win the title" },
+  { metric: "#1 in the World — 12 months", context: "Held top ranking for a full year" },
+  { metric: "2× NHRL Champion", context: "Back-to-back championship titles" },
+  { metric: "50M+ Social Media Views", context: "Across YouTube, TikTok, and Instagram" },
+  { metric: "Featured by ESPN", context: "National broadcast coverage" }
+]} />
+
+<a href="#" class="design-doc-link">Read the full design document →</a>
+
+## Iteration
+
+Multi-season design evolution drove Chonki from a competitive entry to a dominant force. Early iterations prioritized weapon energy at the expense of reliability — a lesson learned through catastrophic gearbox failures in early matches. Subsequent versions shifted to a more balanced energy budget: slightly lower weapon tip speed with dramatically improved drivetrain durability.
+
+The armor strategy evolved from uniform AR500 panels to a hybrid approach with hardened steel in high-impact zones and lighter aluminum in areas protected by the weapon's reach. This saved 3 lbs reallocated to the drivetrain.
+
+Beyond Chonki, designed and built a shipping-container testing arena — the BattleBox — with high-speed cameras and internal armor, funded by the Georgia Tech Student Foundation, planned to be shared with local universities for combat robotics development.
+
+<Figure src="/images/chonki/Chonkii.jpg" alt="Chonki II" caption="Chonkii (2021-2022)" number={4} />
+<Figure src="/images/chonki/Chonkiii.png" alt="Chonki III" caption="Chonkiii (2022-2023)" number={5} />
+<Figure src="/images/chonki/Chonkiv.jpg" alt="Chonki IV" caption="Chonkiv (2023-2025)" number={6} />
+
+<Figure src="/images/chonki/chonkiv_shuffler_disassembled.jpg" alt="Chonkiv shuffler drivetrain disassembled" caption="Shuffler drivetrain components — machined housings, motors, and rolling elements" number={7} />
+<Figure src="/images/chonki/chonkiv_shuffler_side-view.png" alt="Chonkiv shuffler pod CAD side view" caption="Shuffler pod CAD — side profile showing wheel geometry and motor packaging" number={8} />
+<Figure src="/images/chonki/chonkiv_both_copies_2025-worlds.JPG" alt="Both Chonkiv copies at 2025 NHRL World Championship" caption="Both Chonkiv copies at 2025 NHRL World Championship" number={9} />

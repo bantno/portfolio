@@ -1,0 +1,67 @@
+---
+title: "Autonomous Drone Capture System"
+summary: "Full-stack autonomy for tracking and capturing rogue drones in indoor environments."
+status: "Complete"
+domain: "Aerial Autonomy"
+tier: featured
+featured: true
+order: 4
+date_range: "August 2022 – May 2023"
+tags:
+  - autonomy
+  - ROS2
+  - path planning
+  - indoor navigation
+  - Vicon motion capture
+  - mechanical design
+  - fabrication
+metrics:
+  - label: "Replanning"
+    value: "3 Hz"
+  - label: "Environment"
+    value: "Indoor"
+  - label: "Payload"
+    value: "Custom Grasper"
+---
+import { RRTVisualizer } from '../../components/react/RRTVisualizer';
+import { AnnotatedFigure } from '../../components/react/AnnotatedFigure';
+import Figure from '../../components/Figure.astro';
+
+## The Challenge
+
+Autonomously track and capture rogue drones in indoor, GPS-denied, densely populated environments — a scenario where traditional GPS-based navigation fails and obstacle avoidance must happen in real time.
+
+## Approach
+
+Designed and implemented a full-stack autonomy solution for an aerial interceptor drone. Architected a ROS2-based control stack: Raspberry Pi for high-level logic, Pixhawk 6X for low-level flight control, connected via Ethernet.
+
+Integrated Vicon motion capture into the EKF2 estimator for precise indoor positioning, replacing GPS with sub-millimeter accuracy. Developed trajectory generation starting with 2D/3D A* search smoothed with piecewise Bezier curves, later transitioning to bidirectional RRT* achieving 3 Hz replanning rates.
+
+Designed and 3D printed (PLA, NylonX) a mechanical grasping payload with spring-loaded jaws and servo-actuated release mechanism, capable of securing a target drone in flight.
+
+## Path Planning
+
+The RRT* algorithm explores the configuration space by randomly sampling points, connecting them to the nearest existing node, and rewiring the tree when shorter paths are found. This approach handles arbitrary obstacle geometries and supports real-time replanning as the target moves.
+
+<RRTVisualizer client:visible />
+
+## Grasping Mechanism
+
+The mechanical grasper uses spring-loaded jaws that close on contact, with a servo-actuated release for controlled deployment. The NylonX construction provides impact resistance while keeping weight under the drone's payload budget.
+
+<AnnotatedFigure
+  client:visible
+  src="/images/drone-capture/placeholder-grasper.svg"
+  alt="Drone grasping mechanism"
+  hotspots={[
+    { x: 25, y: 30, label: "Spring-loaded jaws", description: "Passive closing mechanism — contact-triggered, no actuation delay" },
+    { x: 60, y: 45, label: "Servo release", description: "SG90 micro servo actuates the release pin for controlled jaw opening" },
+    { x: 45, y: 75, label: "Mounting interface", description: "Dovetail mount to drone frame — tool-free installation for field swaps" }
+  ]}
+/>
+
+## Iteration
+
+The transition from A* to bidirectional RRT* was driven by planning time constraints — A* with Bezier smoothing could not consistently hit the 3 Hz target in cluttered environments. Bidirectional RRT* cut median planning time by 60%, enabling reliable real-time operation.
+
+The grasping mechanism went through three revisions. V1 used rigid jaws that transferred impact loads directly to the drone frame, causing attitude disturbances. V2 added a compliant wrist joint that absorbed impact energy. V3 — the final design — combined the compliant wrist with spring-loaded jaws, eliminating the need for an actuator to close the gripper and reducing weight by 40%.

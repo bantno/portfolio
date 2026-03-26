@@ -1,0 +1,31 @@
+---
+import { getCollection } from "astro:content";
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects
+    .filter((p) => p.data.tier !== "brief")
+    .map((p) => ({
+      params: { slug: p.id.replace(/\.mdx?$/, "") },
+      props: { entry: p },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<ProjectLayout
+  title={entry.data.title}
+  domain={entry.data.domain}
+  status={entry.data.status}
+  date_range={entry.data.date_range}
+  tags={entry.data.tags}
+  metrics={entry.data.metrics}
+  tier={entry.data.tier}
+  paper_url={entry.data.paper_url}
+  conference={entry.data.conference}
+>
+  <Content />
+</ProjectLayout>

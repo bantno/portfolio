@@ -1,0 +1,95 @@
+---
+interface Props {
+  title: string;
+  org: string;
+  dateRange: string;
+  description: string;
+  track: "academic" | "industry";
+  projectLink?: string;
+}
+
+const { title, org, dateRange, description, track, projectLink } = Astro.props;
+---
+
+<div class:list={["timeline-entry", track]}>
+  <div class="entry-marker"></div>
+  <div class="entry-content">
+    <div class="entry-date">{dateRange}</div>
+    <div class="entry-title">{title}</div>
+    <div class="entry-org">{org}</div>
+    <div class="entry-desc">{description}</div>
+    {projectLink && (
+      <a href={projectLink} class="entry-link">See full project →</a>
+    )}
+  </div>
+</div>
+
+<style>
+  .timeline-entry {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    position: relative;
+  }
+
+  .entry-marker {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+    border: 2px solid;
+  }
+
+  .academic .entry-marker {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+  }
+
+  .industry .entry-marker {
+    border-color: var(--color-status-complete);
+    background: var(--color-status-complete);
+  }
+
+  .entry-content {
+    flex: 1;
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .entry-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-xs);
+  }
+
+  .entry-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-bright);
+    margin-bottom: var(--space-xs);
+  }
+
+  .entry-org {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-accent-dim);
+    margin-bottom: var(--space-sm);
+  }
+
+  .entry-desc {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    line-height: 1.5;
+  }
+
+  .entry-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    margin-top: var(--space-sm);
+  }
+</style>

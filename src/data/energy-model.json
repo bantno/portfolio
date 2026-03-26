@@ -1,0 +1,8 @@
+{
+  "battery_wh": 150,
+  "cruise_power_w": 150,
+  "solar_panel_area_m2": 0.8,
+  "panel_efficiency": 0.22,
+  "idle_power_w": 5,
+  "cruise_speed_ms": 18
+}

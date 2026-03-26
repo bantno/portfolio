@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <rect x="80" y="120" width="200" height="160" rx="4" ry="4" fill="#DAA520" fill-opacity="0.3" stroke="#DAA520" stroke-width="2"/>
+  <rect x="320" y="120" width="200" height="160" rx="4" ry="4" fill="#DAA520" fill-opacity="0.3" stroke="#DAA520" stroke-width="2"/>
+  <line x1="180" y1="120" x2="180" y2="280" stroke="#DAA520" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="420" y1="120" x2="420" y2="280" stroke="#DAA520" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="80" y1="200" x2="280" y2="200" stroke="#DAA520" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="320" y1="200" x2="520" y2="200" stroke="#DAA520" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="300" y="200" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#B8860B">Solar Panels</text>
+  <text x="300" y="240" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" fill="#888">placeholder</text>
+</svg>

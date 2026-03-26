@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <rect x="30" y="140" width="540" height="120" rx="60" ry="60" fill="#808080" fill-opacity="0.3" stroke="#808080" stroke-width="2"/>
+  <polygon points="480,200 570,160 570,240" fill="#808080" fill-opacity="0.2" stroke="#808080" stroke-width="2"/>
+  <text x="300" y="200" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#555">Airframe</text>
+  <text x="300" y="240" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" fill="#888">placeholder</text>
+</svg>

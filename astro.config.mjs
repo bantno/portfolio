@@ -1,4 +1,6 @@
 import { defineConfig } from "astro/config";
+import react from "@astrojs/react";
+import mdx from "@astrojs/mdx";
 
 export default defineConfig({
   // For GitHub Pages deployment, set `site` to your GitHub Pages URL
@@ -6,4 +8,5 @@ export default defineConfig({
   // site: "https://<your-username>.github.io",
   // base: "/GCS",
   output: "static",
+  integrations: [react(), mdx()],
 });

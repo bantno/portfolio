@@ -1,0 +1,280 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Base title="About — Brian Epstein">
+  <Nav />
+  <main class="about-page">
+    <div class="container">
+      <h1 class="page-title">// ABOUT</h1>
+
+      <div class="about-layout">
+        <div class="about-photo">
+          <img src="/images/headshot.jpg" alt="Brian Epstein" class="headshot" />
+        </div>
+
+        <div class="about-content">
+          <p>
+            I'm a PhD candidate in Mechanical Engineering at Georgia Tech, graduating October 2026. My work spans the full design cycle — from mathematical modeling and simulation to hardware fabrication and flight testing. I specialize in autonomous systems and controls, with particular depth in aerial vehicles and energy-aware mission planning.
+          </p>
+          <p>
+            My research philosophy centers on closing the gap between simulation and the real world. Every system I build gets tested in hardware, every algorithm gets validated against physical data, and every design decision is driven by what actually works in the field.
+          </p>
+          <p>
+            Outside the lab, I've spent six years in competitive combat robotics through Georgia Tech's RoboJackets. Chonki — the robot I lead — became NHRL's first collegiate featherweight champion and earned over 50 million social media views. The same iterative design mindset that wins championships drives my research.
+          </p>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <section class="education">
+        <h2 class="section-label">// EDUCATION</h2>
+        <div class="edu-grid">
+          <div class="edu-entry">
+            <div class="edu-degree">Ph.D. Mechanical Engineering</div>
+            <div class="edu-school">Georgia Institute of Technology</div>
+            <div class="edu-details">
+              <span>Expected October 2026</span>
+              <span>Focus: Robotics & Controls</span>
+            </div>
+            <div class="edu-research">Thesis: Solar-Powered Autonomous Seaplane UAV for Persistent Maritime Monitoring</div>
+          </div>
+          <div class="edu-entry">
+            <div class="edu-degree">M.S. Mechanical Engineering</div>
+            <div class="edu-school">Georgia Institute of Technology</div>
+            <div class="edu-details">
+              <span>4.00 GPA</span>
+            </div>
+            <div class="edu-research">Research: Autonomous Drone Interceptor</div>
+          </div>
+          <div class="edu-entry">
+            <div class="edu-degree">B.S. Mechanical Engineering</div>
+            <div class="edu-school">Georgia Institute of Technology</div>
+            <div class="edu-details">
+              <span>3.96 GPA</span>
+              <span>Minor: Robotics</span>
+              <span>Honors Program</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Publications -->
+      <section class="publications">
+        <h2 class="section-label">// PUBLICATIONS</h2>
+        <ul class="pub-list">
+          <li class="pub-entry">
+            B. Epstein and J. D. Rogers, "Conceptual Design of a Low-Altitude Solar Powered Seaplane for Oceanic Monitoring," <em>AIAA AVIATION FORUM AND ASCEND 2024</em>.
+          </li>
+          <li class="pub-entry">
+            Ward, D, Epstein, B, Tiziani, L, &amp; Hammond, FL, III. "Optimal Design of a Mechatronic Lever Arm for Pneumatic Exoskeleton: Design and Validation." <em>2021 Design of Medical Devices Conference</em>.
+          </li>
+        </ul>
+      </section>
+
+      <!-- Contact -->
+      <section class="contact-section">
+        <h2 class="section-label">// CONTACT</h2>
+        <div class="contact-grid">
+          <a href="mailto:bepstein8@gatech.edu" class="contact-card">
+            <span class="contact-icon">@</span>
+            <span class="contact-type">EMAIL</span>
+            <span class="contact-value">bepstein8@gatech.edu</span>
+          </a>
+          <a href="https://linkedin.com/in/br-epstein" target="_blank" rel="noopener noreferrer" class="contact-card">
+            <span class="contact-icon">in</span>
+            <span class="contact-type">LINKEDIN</span>
+            <span class="contact-value">linkedin.com/in/br-epstein</span>
+          </a>
+          <a href="https://github.com/bantno" target="_blank" rel="noopener noreferrer" class="contact-card">
+            <span class="contact-icon">&gt;_</span>
+            <span class="contact-type">GITHUB</span>
+            <span class="contact-value">github.com/bantno</span>
+          </a>
+          <a href="/resume.pdf" class="contact-card">
+            <span class="contact-icon">&#9744;</span>
+            <span class="contact-type">RESUME</span>
+            <span class="contact-value">Download PDF</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .about-page {
+    padding-top: calc(56px + var(--space-xl));
+    padding-bottom: var(--space-2xl);
+  }
+
+  .page-title {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-xl);
+  }
+
+  .about-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .headshot {
+    width: 200px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+  }
+
+  .about-content p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: var(--space-md);
+    color: var(--color-text);
+  }
+
+  /* Education */
+  .education {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .edu-grid {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .edu-entry {
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .edu-degree {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-bright);
+    margin-bottom: var(--space-xs);
+  }
+
+  .edu-school {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-accent-dim);
+    margin-bottom: var(--space-sm);
+  }
+
+  .edu-details {
+    display: flex;
+    gap: var(--space-lg);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .edu-research {
+    font-size: 0.85rem;
+    color: var(--color-text);
+    margin-top: var(--space-sm);
+    line-height: 1.5;
+  }
+
+  /* Publications */
+  .publications {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-lg);
+  }
+
+  .pub-list {
+    list-style: none;
+  }
+
+  .pub-entry {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-text);
+    padding: var(--space-md);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    margin-bottom: var(--space-sm);
+  }
+
+  .pub-entry em {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  /* Contact */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-md);
+  }
+
+  .contact-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: border-color 0.2s, transform 0.2s;
+    text-decoration: none;
+  }
+  .contact-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  .contact-icon {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: var(--space-sm);
+  }
+
+  .contact-type {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .contact-value {
+    font-size: 0.85rem;
+    color: var(--color-text-bright);
+  }
+
+  @media (max-width: 768px) {
+    .about-layout {
+      grid-template-columns: 1fr;
+    }
+    .photo-placeholder {
+      width: 150px;
+      height: 180px;
+    }
+  }
+</style>

@@ -1,0 +1,105 @@
+---
+title: "Solar-Powered Autonomous Seaplane"
+summary: "Autonomous solar-electric seaplane for persistent maritime surveillance with MDP-optimized flight planning."
+status: "Active"
+domain: "Aerial Autonomy"
+tier: flagship
+featured: true
+order: 1
+date_range: "August 2023 – Present"
+tags:
+  - autonomy
+  - solar
+  - seaplane
+  - maritime
+  - MDP
+  - aerodynamics
+  - flight testing
+metrics:
+  - label: "Mass"
+    value: "3.0 kg"
+  - label: "Cruise"
+    value: "150W @ 18 m/s"
+  - label: "Survivability"
+    value: "+50%"
+paper_url: "https://arc.aiaa.org/doi/10.2514/6.2024-XXXXX"
+conference: "AIAA AVIATION 2024"
+---
+import { MDPDemo } from '../../components/react/MDPDemo';
+import { ExplodedAssembly } from '../../components/react/ExplodedAssembly';
+import { FlightTrajectory } from '../../components/react/FlightTrajectory';
+import Figure from '../../components/Figure.astro';
+import seaplaneLayers from '../../data/seaplane-layers.json';
+import flightPath from '../../data/flight-path.json';
+
+Developing a solar-powered seaplane UAV for long-term autonomous ocean monitoring, addressing gaps in sustainable, low-altitude surveying. This project spans MDP-based mission planning, aerodynamic analysis, hardware integration, and flight testing of a 3.0 kg prototype.
+
+---
+
+<section id="mission-planning">
+
+## Mission & Energy Planning
+
+A solar-powered UAV must decide when to fly, when to rest on the water and recharge, and how to route itself given uncertain weather and energy constraints. Simple threshold rules — fly when battery is above some level, land when it drops below another — are intuitive but suboptimal.
+
+I developed a Markov Decision Process framework solved via dynamic programming that governs flight planning for long-duration missions, balancing energy constraints and environmental risks. This improved mission survivability by 50% over baseline threshold algorithms.
+
+The vehicle must decide when to fly and when to rest on the water to recharge. Can you design a rule that outperforms the optimal policy?
+
+<MDPDemo client:visible />
+
+The key insight: the optimal policy makes non-obvious decisions — like resting during a sunny period to build energy reserves for a risky overnight segment — that no simple threshold can replicate.
+
+<Figure src="/images/seaplane/placeholder-mdp-policy.svg" alt="MDP policy visualization" caption="Optimal flight/rest policy across battery state and time-of-day dimensions" number={1} />
+
+</section>
+
+---
+
+<section id="vehicle-design">
+
+## Vehicle Design & Analysis
+
+The seaplane's design integrates aerodynamic performance, hydrostatic stability, and solar energy harvesting into a single airframe.
+
+**Aerodynamic analysis** in VSPAero estimated drag polars, lift coefficients, and stability derivatives using finite difference methods. **Hydrostatic stability analysis** calculated transverse and longitudinal metacentric heights to ensure roll stability while floating. **Solar integration** uses Ascent Solar CIGS thin-film modules with an MPPT controller and Battery Management System for autonomous recharging. A custom **spanwise wing rotation system** enables solar tracking to maximize energy capture.
+
+<ExplodedAssembly client:visible layers={seaplaneLayers} title="Seaplane Assembly" />
+
+<Figure src="/images/seaplane/placeholder-drag-polar.svg" alt="Drag polar plot" caption="VSPAero drag polar showing CL vs CD for cruise configuration" number={2} />
+
+<Figure src="/images/seaplane/placeholder-hydrostatic.svg" alt="Hydrostatic stability diagram" caption="Transverse metacentric height analysis for water landing configuration" number={3} />
+
+</section>
+
+---
+
+<section id="build-test">
+
+## Build, Integrate & Test
+
+Constructed a prototype amphibious UAV at 3.0 kg. Fabrication included composites manufacturing and custom mechanism machining. Integrated solar modules, MPPT controller, BMS, and PX4 flight controller into the airframe.
+
+Conducted maiden flight testing: validated takeoff run of 100 ft and glide ratio of 6.4. Used flight logs to tune PX4 control parameters. Led a flight test program executing sorties that validated theoretical power models — 150W cruise at 18 m/s — and diagnosed critical hydrodynamic instabilities driving rapid design iterations.
+
+<FlightTrajectory client:visible waypoints={flightPath} />
+
+<Figure src="/images/seaplane/placeholder-prototype.svg" alt="Seaplane prototype" caption="Completed prototype during pre-flight inspection" number={4} />
+
+</section>
+
+---
+
+<section id="team-iteration">
+
+## Team & Iteration
+
+Led a team of 8 undergraduate researchers, guiding them across machine design, composites manufacturing, controls, and flight testing.
+
+Diagnosed critical hydrodynamic instabilities from flight test data, driving rapid hull redesign. The original hull cross-section produced unacceptable spray patterns during water taxi, causing wing wetting and loss of solar panel efficiency. Iterative testing with modified hull geometries resolved the instability within two design cycles.
+
+Iterative control parameter tuning from flight log analysis refined the PX4 gains for the seaplane's unique flight envelope — low wing loading and high aspect ratio demanded significantly different tuning from standard quadcopter or fixed-wing defaults.
+
+**Published:** B. Epstein and J. D. Rogers, "Conceptual Design of a Low-Altitude Solar Powered Seaplane for Oceanic Monitoring," AIAA AVIATION FORUM AND ASCEND 2024.
+
+</section>
