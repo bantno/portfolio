@@ -1,6 +1,6 @@
 ---
 interface Props {
-  metrics: { metric: string; context: string }[];
+  metrics: { metric: string; context: string; href?: string }[];
 }
 
 const { metrics } = Astro.props;
@@ -8,10 +8,17 @@ const { metrics } = Astro.props;
 
 <div class="result-proof">
   {metrics.map((m) => (
-    <div class="proof-block">
-      <div class="proof-metric">{m.metric}</div>
-      <div class="proof-context">{m.context}</div>
-    </div>
+    m.href ? (
+      <a href={m.href} target="_blank" rel="noopener noreferrer" class="proof-block proof-link">
+        <div class="proof-metric">{m.metric}</div>
+        <div class="proof-context">{m.context}</div>
+      </a>
+    ) : (
+      <div class="proof-block">
+        <div class="proof-metric">{m.metric}</div>
+        <div class="proof-context">{m.context}</div>
+      </div>
+    )
   ))}
 </div>
 
@@ -46,5 +53,16 @@ const { metrics } = Astro.props;
     color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+  }
+
+  .proof-link {
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+
+  .proof-link:hover {
+    border-color: var(--color-accent);
+    background: rgba(71, 232, 120, 0.04);
   }
 </style>

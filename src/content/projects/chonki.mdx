@@ -30,6 +30,15 @@ import chonkiLayers from '../../data/chonki-layers.json';
 
 <Figure src="/images/chonki/Chonkiv Hero.png" alt="Chonkiv combat robot" caption="Chonkiv — 2× NHRL Champion, #1 in the World" wide={true} />
 
+<ResultProof metrics={[
+  { metric: "NHRL's 1st Collegiate Featherweight Champion", context: "First collegiate team to win the title" },
+  { metric: "#1 in the World — 12 months", context: "Held top ranking for a full year" },
+  { metric: "2× NHRL Champion", context: "Back-to-back championship titles" },
+  { metric: "50M+ Social Media Views", context: "Across YouTube, TikTok, and Instagram" },
+  { metric: "Featured by ESPN", context: "National broadcast coverage" },
+  { metric: "Design Document", context: "Click to read the Chonkiv technical paper →", href: "/CHONKIV_Documentation_DRAFT.pdf" }
+]} />
+
 Combat robotics pits custom-built machines against each other in an enclosed arena — Chonki competes in the featherweight class (30 lb, or 45 lb with the shuffler weight bonus) at NHRL, the premier US combat robotics league.
 
 ## The Challenge
@@ -50,16 +59,6 @@ Each competition season drove redesign: weapon geometry changes to improve bite 
 </Gallery>
 
 <ExplodedAssembly client:visible layers={chonkiLayers} title="Chonki Assembly" />
-
-<ResultProof metrics={[
-  { metric: "NHRL's 1st Collegiate Featherweight Champion", context: "First collegiate team to win the title" },
-  { metric: "#1 in the World — 12 months", context: "Held top ranking for a full year" },
-  { metric: "2× NHRL Champion", context: "Back-to-back championship titles" },
-  { metric: "50M+ Social Media Views", context: "Across YouTube, TikTok, and Instagram" },
-  { metric: "Featured by ESPN", context: "National broadcast coverage" }
-]} />
-
-<a href="#" class="design-doc-link">Read the full design document →</a>
 
 ## Iteration
 
@@ -97,12 +96,11 @@ Chonkiv was a systematic redesign targeting every Chonkiii shortcoming:
 - **Electronics:** 3D-printed enclosures with dedicated battery slots and wire-routing channels replaced the previous loose wiring.
 - **Frame:** Puzzle-fit 7075 aluminum with M4 fasteners (up from M3), waterjet-cut to tight tolerances for a rigid chassis with minimal fastener reliance.
 
-<BeforeAfter
-  beforeImage="/images/chonki/Chonkiii.png"
-  afterImage="/images/chonki/chonkiv_standard_config-2025-worlds.JPG"
-  beforeLabel="Chonkiii (2022–2023)"
-  afterLabel="Chonkiv (2023–2025)"
-/>
+<Figure src="/images/chonki/chonkiv_standard_config-2025-worlds.JPG" alt="Chonkiv in standard configuration" caption="Chonkiv (2023–2025)" number={8} />
+
+<div class="video-embed">
+  <iframe src="https://www.youtube.com/embed/hgzajxc9qRU" title="Chonkiv vs Ares — top two seeds at 2025 NHRL World Championship" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
 
 The result: a 16–3 record with 12 knockouts across 19 fights, two Golden Dumpster trophies, and a rise to #1 in the world — the most successful shell spinner campaign in modern featherweight competition.
 
@@ -115,11 +113,21 @@ The result: a 16–3 record with 12 knockouts across 19 fights, two Golden Dumps
   <Figure src="/images/chonki/chonkiv_both_copies_2025-worlds.JPG" alt="Both Chonkiv copies at 2025 NHRL World Championship" caption="Both Chonkiv copies at 2025 Worlds" number={11} />
 </Gallery>
 
-<Figure src="/images/placeholder-gif.svg" alt="Chonkiv self-righting" caption="Chonkiv self-righting — placeholder" number={12} />
+<figure style="margin: var(--space-lg) 0;">
+  <div style="border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-bg-raised);">
+    <video src="/images/chonki/Chonkiv-vs-ARES---2025-World-Championships-30lb--720p.mp4" controls preload="metadata" style="width:100%;display:block;"></video>
+  </div>
+  <figcaption style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-sm); line-height: 1.5;">
+    <span style="color: var(--color-accent); font-weight: 600; margin-right: var(--space-sm);">Figure 12 —</span>
+    Chonkiv vs Ares — 2025 NHRL World Championship semifinal
+  </figcaption>
+</figure>
+
+<Figure src="/images/placeholder-gif.svg" alt="Chonkiv self-righting" caption="Chonkiv self-righting — placeholder" number={13} />
 
 <Gallery label="Competition Highlights">
-  <Figure src="/images/placeholder-gif.svg" alt="Chonkiv big hit" caption="Big hit — placeholder" number={13} />
   <Figure src="/images/placeholder-gif.svg" alt="Chonkiv big hit" caption="Big hit — placeholder" number={14} />
+  <Figure src="/images/placeholder-gif.svg" alt="Chonkiv big hit" caption="Big hit — placeholder" number={15} />
 </Gallery>
 
 Beyond Chonki, designed and built a shipping-container testing arena — the BattleBox — with high-speed cameras and internal armor, funded by the Georgia Tech Student Foundation, planned to be shared with local universities for combat robotics development.
