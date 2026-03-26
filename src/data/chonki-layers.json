@@ -2,46 +2,46 @@
   {
     "id": "full-robot",
     "label": "Complete Robot",
-    "svgPath": "/images/layers/chonki/full-robot.svg",
+    "svgPath": "/images/layers/chonki/full-robot.png",
     "annotations": [
-      { "x": 50, "y": 20, "text": "45 lb featherweight class — maximum weight fully loaded" },
-      { "x": 70, "y": 65, "text": "Low center of gravity for stability under weapon impacts" }
+      { "x": 50, "y": 20, "text": "30 lb shell spinner with 1.5\u00d7 shuffler weight bonus \u2014 45 lb total" },
+      { "x": 70, "y": 65, "text": "16\u20133 record, 12 KOs, #1 in the world" }
     ]
   },
   {
     "id": "armor",
     "label": "Armor & Shell",
-    "svgPath": "/images/layers/chonki/armor.svg",
+    "svgPath": "/images/layers/chonki/armor.png",
     "annotations": [
-      { "x": 40, "y": 30, "text": "AR500 hardened steel in high-impact zones — weapon-facing surfaces" },
-      { "x": 65, "y": 55, "text": "Aluminum side panels save 3 lbs reallocated to drivetrain" }
+      { "x": 35, "y": 30, "text": "CNC-machined from a monolithic 4140 steel billet \u2014 no welds, no weld failures" },
+      { "x": 65, "y": 55, "text": "Sharpened AR600 toothicanes with integrated pockets \u2014 loads transfer into shell body, not fastener shear" }
     ]
   },
   {
     "id": "weapon",
     "label": "Weapon System",
-    "svgPath": "/images/layers/chonki/weapon.svg",
+    "svgPath": "/images/layers/chonki/weapon.png",
     "annotations": [
-      { "x": 50, "y": 35, "text": "Weapon mass budget vs. armor coverage — the core tradeoff in combat robotics" },
-      { "x": 30, "y": 60, "text": "Brushless outrunner motor sized for target tip speed and stored energy" }
+      { "x": 40, "y": 35, "text": "Friction-drive system \u2014 two weapon wheels ride an internal track machined into the shell" },
+      { "x": 60, "y": 60, "text": "570 Kv motor producing ~1.2 in bite depth at 6 ft/s ground speed" }
     ]
   },
   {
     "id": "drivetrain",
     "label": "Drivetrain",
-    "svgPath": "/images/layers/chonki/drivetrain.svg",
+    "svgPath": "/images/layers/chonki/drivetrain.png",
     "annotations": [
-      { "x": 35, "y": 45, "text": "Gearing tuned for pushing power — critical in control-style matchups" },
-      { "x": 65, "y": 50, "text": "Reinforced gearboxes after early-season catastrophic failures" }
+      { "x": 35, "y": 45, "text": "3:1 right-angle bevel gear reduction \u2014 up from 2:1, dramatically more pushing power" },
+      { "x": 65, "y": 50, "text": "Modular shuffler pods \u2014 self-contained units, field-swappable in ~15 minutes" }
     ]
   },
   {
     "id": "electronics",
     "label": "Electronics",
-    "svgPath": "/images/layers/chonki/electronics.svg",
+    "svgPath": "/images/layers/chonki/electronics.png",
     "annotations": [
-      { "x": 45, "y": 40, "text": "ESCs and receiver mounted in shock-isolated compartment" },
-      { "x": 60, "y": 65, "text": "LiPo battery pack with redundant power cutoff for safety" }
+      { "x": 40, "y": 35, "text": "Two independent circuits \u2014 drive and weapon \u2014 each with dual batteries in series" },
+      { "x": 60, "y": 60, "text": "3D-printed enclosures with dedicated battery slots and wire-routing channels" }
     ]
   }
 ]
