@@ -24,13 +24,17 @@ video: "https://www.youtube.com/embed/CkGYSpqJTt8"
 import { ExplodedAssembly } from '../../components/react/ExplodedAssembly';
 import ResultProof from '../../components/ResultProof.astro';
 import Figure from '../../components/Figure.astro';
+import BeforeAfter from '../../components/BeforeAfter.astro';
+import Gallery from '../../components/Gallery.astro';
 import chonkiLayers from '../../data/chonki-layers.json';
 
 <Figure src="/images/chonki/Chonkiv Hero.png" alt="Chonkiv combat robot" caption="Chonkiv — 2× NHRL Champion, #1 in the World" wide={true} />
 
+Combat robotics pits custom-built machines against each other in an enclosed arena — Chonki competes in the featherweight class (30 lb, or 45 lb with the shuffler weight bonus) at NHRL, the premier US combat robotics league.
+
 ## The Challenge
 
-Design and build a competitive 45 lb combat robot within a collegiate team, iterating across multiple competition seasons at NHRL — the premier US combat robotics league.
+Design and build a competitive combat robot within a collegiate team, iterating across multiple competition seasons.
 
 ## Approach
 
@@ -40,11 +44,10 @@ Each competition season drove redesign: weapon geometry changes to improve bite 
 
 ## Evidence
 
-<Figure src="/images/chonki/chonkiv_standard_config-2025-worlds.JPG" alt="Chonkiv in standard configuration at 2025 Worlds" caption="Chonkiv in standard configuration at 2025 NHRL World Championship" number={1} />
-
-<Figure src="/images/chonki/shuffler_pod.png" alt="Chonkiv shuffler drivetrain CAD model" caption="Full CAD model of the shuffler drivetrain pod" number={2} />
-
-<Figure src="/images/chonki/chonkiv_electronics_layout-picture.png" alt="Chonkiv internal electronics layout" caption="Electronics layout — drive motors, weapon motor, batteries, and ESCs" number={3} />
+<Gallery>
+  <Figure src="/images/chonki/chonkiv_standard_config-2025-worlds.JPG" alt="Chonkiv in standard configuration at 2025 Worlds" caption="Chonkiv at 2025 NHRL World Championship" number={1} />
+  <Figure src="/images/chonki/shuffler_pod.png" alt="Chonkiv shuffler drivetrain CAD model" caption="Shuffler drivetrain pod CAD" number={2} />
+</Gallery>
 
 <ExplodedAssembly client:visible layers={chonkiLayers} title="Chonki Assembly" />
 
@@ -60,16 +63,63 @@ Each competition season drove redesign: weapon geometry changes to improve bite 
 
 ## Iteration
 
-Multi-season design evolution drove Chonki from a competitive entry to a dominant force. Early iterations prioritized weapon energy at the expense of reliability — a lesson learned through catastrophic gearbox failures in early matches. Subsequent versions shifted to a more balanced energy budget: slightly lower weapon tip speed with dramatically improved drivetrain durability.
+Chonki started as a name, not a design. The practical goal: exploit the 1.5x weight bonus that NHRL grants robots using non-wheeled locomotion, and use that extra mass to evaluate whether shell spinners could be competitive in the featherweight class.
 
-The armor strategy evolved from uniform AR500 panels to a hybrid approach with hardened steel in high-impact zones and lighter aluminum in areas protected by the weapon's reach. This saved 3 lbs reallocated to the drivetrain.
+### Chonki (2020)
+
+The original Chonki was designed during the COVID-19 pandemic but never built — manufacturing restrictions made fabrication impossible. It existed only in CAD, but established the shell spinner + shuffler drivetrain architecture that all future versions would build on.
+
+### Chonkii (2021–2022)
+
+The first physical Chonki. Big, loud, and impossible to ignore — the shufflers scraping on steel arena floors required hearing protection at competition. Chonkii proved the concept was viable, beating Marathon (ranked #3 at the time) at Motorama, but had significant room for improvement.
+
+<Gallery>
+  <Figure src="/images/chonki/Chonkii.jpg" alt="Chonkii at competition" caption="Chonkii (2021–2022)" number={4} />
+  <Figure src="/images/placeholder-gif.svg" alt="Chonkii in action" caption="Chonkii competition footage — placeholder" number={5} />
+</Gallery>
+
+### Chonkiii (2022–2023)
+
+A major design leap. Chonkiii introduced a hardened 4140 alloy steel shell — proving the CNC billet approach that would define all future versions. It added a sloped wall shell design, reduced ground clearance, a self-righter, and dual weapon drive motors. Chonkiii was the first Chonki to compete at NHRL and was more competitive, but still had a ways to go: two-piece impactors were prone to bolt failures, the 2:1 drive gearing was underpowered, and the shuffler modules — while reliable — lacked the torque to drive effectively against strong opponents.
+
+<Gallery>
+  <Figure src="/images/chonki/Chonkiii.png" alt="Chonkiii at competition" caption="Chonkiii (2022–2023)" number={6} />
+  <Figure src="/images/placeholder-gif.svg" alt="Chonkiii in action" caption="Chonkiii competition footage — placeholder" number={7} />
+</Gallery>
+
+### Chonkiv (2023–2025)
+
+Chonkiv was a systematic redesign targeting every Chonkiii shortcoming:
+
+- **Teeth:** Single-piece sharpened AR600 toothicanes replaced the failure-prone two-piece AR500 impactors, with a larger rake angle for better bite depth and cutting efficiency.
+- **Drive:** 3:1 bevel gear reduction (up from 2:1) delivered substantially more pushing power — enough to push opponents without the shell spinning.
+- **Shuffler pods:** Modular, self-contained units that can be field-swapped in ~15 minutes for rapid pit repairs.
+- **Electronics:** 3D-printed enclosures with dedicated battery slots and wire-routing channels replaced the previous loose wiring.
+- **Frame:** Puzzle-fit 7075 aluminum with M4 fasteners (up from M3), waterjet-cut to tight tolerances for a rigid chassis with minimal fastener reliance.
+
+<BeforeAfter
+  beforeImage="/images/chonki/Chonkiii.png"
+  afterImage="/images/chonki/chonkiv_standard_config-2025-worlds.JPG"
+  beforeLabel="Chonkiii (2022–2023)"
+  afterLabel="Chonkiv (2023–2025)"
+/>
+
+The result: a 16–3 record with 12 knockouts across 19 fights, two Golden Dumpster trophies, and a rise to #1 in the world — the most successful shell spinner campaign in modern featherweight competition.
+
+## Gallery
+
+<Gallery label="Design & Build">
+  <Figure src="/images/chonki/chonkiv_shuffler_disassembled.jpg" alt="Chonkiv shuffler drivetrain disassembled" caption="Shuffler components — machined housings, motors, rolling elements" number={8} />
+  <Figure src="/images/chonki/chonkiv_shuffler_side-view.png" alt="Chonkiv shuffler pod CAD side view" caption="Shuffler pod CAD — wheel geometry and motor packaging" number={9} />
+  <Figure src="/images/chonki/chonkiv_electronics_layout-picture.png" alt="Chonkiv internal electronics layout" caption="Electronics with 3D-printed enclosures and wire routing" number={10} />
+  <Figure src="/images/chonki/chonkiv_both_copies_2025-worlds.JPG" alt="Both Chonkiv copies at 2025 NHRL World Championship" caption="Both Chonkiv copies at 2025 Worlds" number={11} />
+</Gallery>
+
+<Figure src="/images/placeholder-gif.svg" alt="Chonkiv self-righting" caption="Chonkiv self-righting — placeholder" number={12} />
+
+<Gallery label="Competition Highlights">
+  <Figure src="/images/placeholder-gif.svg" alt="Chonkiv big hit" caption="Big hit — placeholder" number={13} />
+  <Figure src="/images/placeholder-gif.svg" alt="Chonkiv big hit" caption="Big hit — placeholder" number={14} />
+</Gallery>
 
 Beyond Chonki, designed and built a shipping-container testing arena — the BattleBox — with high-speed cameras and internal armor, funded by the Georgia Tech Student Foundation, planned to be shared with local universities for combat robotics development.
-
-<Figure src="/images/chonki/Chonkii.jpg" alt="Chonki II" caption="Chonkii (2021-2022)" number={4} />
-<Figure src="/images/chonki/Chonkiii.png" alt="Chonki III" caption="Chonkiii (2022-2023)" number={5} />
-<Figure src="/images/chonki/Chonkiv.jpg" alt="Chonki IV" caption="Chonkiv (2023-2025)" number={6} />
-
-<Figure src="/images/chonki/chonkiv_shuffler_disassembled.jpg" alt="Chonkiv shuffler drivetrain disassembled" caption="Shuffler drivetrain components — machined housings, motors, and rolling elements" number={7} />
-<Figure src="/images/chonki/chonkiv_shuffler_side-view.png" alt="Chonkiv shuffler pod CAD side view" caption="Shuffler pod CAD — side profile showing wheel geometry and motor packaging" number={8} />
-<Figure src="/images/chonki/chonkiv_both_copies_2025-worlds.JPG" alt="Both Chonkiv copies at 2025 NHRL World Championship" caption="Both Chonkiv copies at 2025 NHRL World Championship" number={9} />

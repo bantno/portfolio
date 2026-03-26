@@ -1,0 +1,67 @@
+---
+interface Props {
+  columns?: 2 | 3;
+  label?: string;
+}
+
+const { columns = 2, label } = Astro.props;
+---
+
+<div class:list={["gallery", `cols-${columns}`]}>
+  {label && <div class="gallery-label">{label}</div>}
+  <div class="gallery-grid">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .gallery {
+    margin: var(--space-lg) 0;
+  }
+
+  .gallery-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .gallery-grid {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .cols-2 .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cols-3 .gallery-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .gallery :global(.figure) {
+    margin: 0;
+  }
+
+  .gallery :global(.figure-media) {
+    aspect-ratio: 4 / 3;
+  }
+
+  .gallery :global(.figure-media img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 600px) {
+    .cols-2 .gallery-grid,
+    .cols-3 .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

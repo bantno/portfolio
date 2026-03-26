@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none">
+  <rect width="640" height="360" fill="#0a0e1a"/>
+  <rect x="1" y="1" width="638" height="358" rx="7" stroke="#1e2536" stroke-width="2" fill="none"/>
+  <circle cx="320" cy="160" r="32" stroke="#2a3a5c" stroke-width="2" fill="none"/>
+  <polygon points="310,145 310,175 340,160" fill="#2a3a5c"/>
+  <text x="320" y="220" text-anchor="middle" font-family="monospace" font-size="13" fill="#3a4a6c">GIF placeholder</text>
+</svg>

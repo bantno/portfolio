@@ -50,9 +50,14 @@ const { beforeImage, afterImage, beforeLabel, afterLabel } = Astro.props;
     border-bottom: 1px solid var(--color-border);
   }
 
+  .ba-media {
+    aspect-ratio: 4 / 3;
+  }
+
   .ba-media img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     display: block;
   }
 
