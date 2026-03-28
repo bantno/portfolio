@@ -1,8 +1,10 @@
 import { useState } from "react";
 
 interface Annotation {
-  x: number;
-  y: number;
+  ax: number;
+  ay: number;
+  lx: number;
+  ly: number;
   text: string;
 }
 
@@ -10,6 +12,7 @@ interface Layer {
   id: string;
   label: string;
   svgPath: string;
+  svgPath2?: string;
   annotations: Annotation[];
 }
 
@@ -93,7 +96,7 @@ export function ExplodedAssembly({ layers, title, basePath = "" }: Props) {
       >
         {layers.map((layer, i) => {
           const offset =
-            i < step ? -(step - i) * 60 : i > step ? (i - step) * 60 : 0;
+            i < step ? -(step - i) * 250 : i > step ? (i - step) * 250 : 0;
           const opacity = i === step ? 1 : i < step ? 0.15 : 0.1;
 
           return (
@@ -111,27 +114,72 @@ export function ExplodedAssembly({ layers, title, basePath = "" }: Props) {
                 pointerEvents: i === step ? "auto" : "none",
               }}
             >
-              <img
-                src={`${basePath}${layer.svgPath}`}
-                alt={layer.label}
-                style={{
-                  maxWidth: "80%",
-                  maxHeight: "80%",
-                  objectFit: "contain",
-                }}
-              />
+              {layer.svgPath2 ? (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "80%", maxHeight: "95%" }}>
+                  <img
+                    src={`${basePath}${layer.svgPath}`}
+                    alt={layer.label}
+                    style={{ maxWidth: "100%", maxHeight: "44%", objectFit: "contain" }}
+                  />
+                  <div style={{ width: "60%", height: "1px", background: "var(--color-border-bright)", margin: "0.25rem 0" }} />
+                  <img
+                    src={`${basePath}${layer.svgPath2}`}
+                    alt={`${layer.label} (alternate view)`}
+                    style={{ maxWidth: "100%", maxHeight: "44%", objectFit: "contain" }}
+                  />
+                </div>
+              ) : (
+                <img
+                  src={`${basePath}${layer.svgPath}`}
+                  alt={layer.label}
+                  style={{ maxWidth: "80%", maxHeight: "80%", objectFit: "contain" }}
+                />
+              )}
             </div>
           );
         })}
 
-        {/* Annotations for current layer */}
+        {/* Leader lines */}
+        <svg
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
+          }}
+        >
+          {current.annotations.map((a, i) => (
+            <line
+              key={i}
+              x1={`${a.ax}%`}
+              y1={`${a.ay}%`}
+              x2={`${a.lx}%`}
+              y2={`${a.ly}%`}
+              stroke="var(--color-accent)"
+              strokeWidth={1.5}
+              strokeOpacity={0.8}
+            />
+          ))}
+          {current.annotations.map((a, i) => (
+            <circle
+              key={`dot-${i}`}
+              cx={`${a.ax}%`}
+              cy={`${a.ay}%`}
+              r={4}
+              fill="var(--color-accent)"
+            />
+          ))}
+        </svg>
+
+        {/* Annotation labels */}
         {current.annotations.map((a, i) => (
           <div
             key={i}
             style={{
               position: "absolute",
-              left: `${a.x}%`,
-              top: `${a.y}%`,
+              left: `${a.lx}%`,
+              top: `${a.ly}%`,
               transform: "translate(-50%, -50%)",
               background: "rgba(10, 14, 26, 0.9)",
               border: "1px solid var(--color-border-bright)",
@@ -143,19 +191,8 @@ export function ExplodedAssembly({ layers, title, basePath = "" }: Props) {
               lineHeight: 1.4,
               fontFamily: "var(--font-mono)",
               pointerEvents: "none",
-              opacity: 1,
-              transition: "opacity 0.3s ease",
             }}
           >
-            <div
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "var(--color-accent)",
-                marginBottom: "0.25rem",
-              }}
-            />
             {a.text}
           </div>
         ))}

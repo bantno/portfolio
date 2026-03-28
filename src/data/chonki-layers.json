@@ -4,8 +4,8 @@
     "label": "Complete Robot",
     "svgPath": "/images/layers/chonki/full-robot.png",
     "annotations": [
-      { "x": 50, "y": 20, "text": "30 lb shell spinner with 1.5\u00d7 shuffler weight bonus \u2014 45 lb total" },
-      { "x": 70, "y": 65, "text": "16\u20133 record, 12 KOs, #1 in the world" }
+      { "ax": 35, "ay": 30, "lx": 15, "ly": 15, "text": "Featherweight shell spinner with 1.5\u00d7 shuffler weight bonus \u2014 45 lb total." },
+      { "ax": 55, "ay": 65, "lx": 85, "ly": 80, "text": "16\u20133 record, 12 KOs, #1 in the world (As of Oct 2025)." }
     ]
   },
   {
@@ -13,26 +13,28 @@
     "label": "Armor & Shell",
     "svgPath": "/images/layers/chonki/armor.png",
     "annotations": [
-      { "x": 35, "y": 30, "text": "CNC-machined from a monolithic 4140 steel billet \u2014 no welds, no weld failures" },
-      { "x": 65, "y": 55, "text": "Sharpened AR600 toothicanes with integrated pockets \u2014 loads transfer into shell body, not fastener shear" }
+      { "ax": 35, "ay": 60, "lx": 20, "ly": 85, "text": "CNC-machined from a 4140 steel billet \u2014 no welds, no weld failures." },
+      { "ax": 76, "ay": 49, "lx": 80, "ly": 15, "text": "Sharpened AR600 toothicanes with integrated pockets \u2014 loads transfer into shell body, not fastener shear." },
+      { "ax": 50, "ay": 70, "lx": 82, "ly": 75, "text": "24 lbs of spinning mass with a 23 in tip-to-tip diameter." }
     ]
   },
   {
     "id": "weapon",
     "label": "Weapon System",
-    "svgPath": "/images/layers/chonki/weapon.png",
+    "svgPath": "/images/layers/chonki/shell_removed.png",
     "annotations": [
-      { "x": 40, "y": 35, "text": "Friction-drive system \u2014 two weapon wheels ride an internal track machined into the shell" },
-      { "x": 60, "y": 60, "text": "570 Kv motor producing ~1.2 in bite depth at 6 ft/s ground speed" }
+      { "ax": 23, "ay": 50, "lx": 16, "ly": 18, "text": "Friction-drive system \u2014 two weapon wheels ride an internal track machined into the shell." },
+      { "ax": 57, "ay": 51, "lx": 82, "ly": 78, "text": "2x 250 Kv Scorpion 4035 motors drawing 7000W during spinup. Shell reaches 200mph tip speed in 3 seconds." }
     ]
   },
   {
     "id": "drivetrain",
     "label": "Drivetrain",
     "svgPath": "/images/layers/chonki/drivetrain.png",
+    "svgPath2": "/images/layers/chonki/drivetrain_side.png",
     "annotations": [
-      { "x": 35, "y": 45, "text": "3:1 right-angle bevel gear reduction \u2014 up from 2:1, dramatically more pushing power" },
-      { "x": 65, "y": 50, "text": "Modular shuffler pods \u2014 self-contained units, field-swappable in ~15 minutes" }
+      { "ax": 40, "ay": 45, "lx": 12, "ly": 18, "text": "3:1 right-angle bevel gear reduction \u2014 up from 2:1, dramatically more pushing power" },
+      { "ax": 60, "ay": 50, "lx": 85, "ly": 78, "text": "Modular shuffler pods \u2014 self-contained units, field-swappable in ~15 minutes" }
     ]
   },
   {
@@ -40,8 +42,8 @@
     "label": "Electronics",
     "svgPath": "/images/layers/chonki/electronics.png",
     "annotations": [
-      { "x": 40, "y": 35, "text": "Two independent circuits \u2014 drive and weapon \u2014 each with dual batteries in series" },
-      { "x": 60, "y": 60, "text": "3D-printed enclosures with dedicated battery slots and wire-routing channels" }
+      { "ax": 45, "ay": 38, "lx": 12, "ly": 18, "text": "Two independent circuits \u2014 drive and weapon \u2014 each with dual batteries in series" },
+      { "ax": 55, "ay": 58, "lx": 85, "ly": 78, "text": "3D-printed enclosures with dedicated battery slots and wire-routing channels" }
     ]
   }
 ]
