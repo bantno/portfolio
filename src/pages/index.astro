@@ -27,7 +27,7 @@ const statusClass: Record<string, string> = {
 
       <div class="hero-inner container">
         <div class="hero-image">
-          <img src="/images/hero.jpg" alt="Brian Epstein with hardware" />
+          <img src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/images/hero.jpg`} alt="Brian Epstein with hardware" />
         </div>
         <p class="hero-tag">ROBOTICS & CONTROLS · PhD CANDIDATE</p>
         <h1 class="hero-name">Brian Epstein</h1>
@@ -46,7 +46,7 @@ const statusClass: Record<string, string> = {
             const d = project.data;
             const isBrief = d.tier === "brief";
             const isProminent = d.tier === "flagship" || d.tier === "featured";
-            const href = isBrief ? undefined : `/projects/${project.id.replace(/\.mdx?$/, "")}`;
+            const href = isBrief ? undefined : `${import.meta.env.BASE_URL.replace(/\/$/, '')}/projects/${project.id.replace(/\.mdx?$/, "")}`;
             const Tag = isBrief ? "div" : "a";
 
             return (

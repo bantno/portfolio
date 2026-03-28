@@ -5,30 +5,31 @@ const projects = await getCollection("projects");
 const navProjects = projects
   .filter((p) => p.data.tier !== "brief")
   .sort((a, b) => a.data.order - b.data.order);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <nav class="nav">
   <div class="nav-inner container">
-    <a href="/" class="nav-logo">B://EPSTEIN</a>
+    <a href={`${base}/`} class="nav-logo">B://EPSTEIN</a>
 
     <!-- Desktop links -->
     <div class="nav-links">
-      <a href="/">Home</a>
+      <a href={`${base}/`}>Home</a>
       <div class="nav-dropdown">
         <button class="nav-dropdown-trigger" aria-expanded="false" aria-haspopup="true">
           Projects <span class="dropdown-arrow">▾</span>
         </button>
         <div class="dropdown-panel">
           {navProjects.map((p) => (
-            <a href={`/projects/${p.id.replace(/\.mdx?$/, "")}`} class="dropdown-item">
+            <a href={`${base}/projects/${p.id.replace(/\.mdx?$/, "")}`} class="dropdown-item">
               <span class="dropdown-title">{p.data.title}</span>
               <span class="dropdown-domain">{p.data.domain}</span>
             </a>
           ))}
         </div>
       </div>
-      <a href="/career">Career</a>
-      <a href="/about">About</a>
+      <a href={`${base}/career`}>Career</a>
+      <a href={`${base}/about`}>About</a>
     </div>
 
     <!-- Mobile hamburger -->
@@ -41,15 +42,15 @@ const navProjects = projects
 
   <!-- Mobile menu -->
   <div class="mobile-menu">
-    <a href="/">Home</a>
+    <a href={`${base}/`}>Home</a>
     <div class="mobile-section-label">Projects</div>
     {navProjects.map((p) => (
-      <a href={`/projects/${p.id.replace(/\.mdx?$/, "")}`} class="mobile-project-link">
+      <a href={`${base}/projects/${p.id.replace(/\.mdx?$/, "")}`} class="mobile-project-link">
         {p.data.title}
       </a>
     ))}
-    <a href="/career">Career</a>
-    <a href="/about">About</a>
+    <a href={`${base}/career`}>Career</a>
+    <a href={`${base}/about`}>About</a>
   </div>
 </nav>
 

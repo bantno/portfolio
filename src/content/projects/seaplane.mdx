@@ -1,6 +1,6 @@
 ---
-title: "Solar-Powered Autonomous Seaplane"
-summary: "Autonomous solar-electric seaplane for persistent maritime surveillance with MDP-optimized flight planning."
+title: "AHAB — Solar-Powered Seaplane for Marine Mammal Monitoring"
+summary: "Solar-powered seaplane UAV for persistent cetacean monitoring, combining MDP-optimized flight planning with a novel wing-rotation mechanism for solar tracking and self-righting."
 status: "Active"
 domain: "Aerial Autonomy"
 tier: flagship
@@ -17,89 +17,121 @@ tags:
   - flight testing
 metrics:
   - label: "Mass"
-    value: "3.0 kg"
+    value: "3.75 kg"
   - label: "Cruise"
     value: "150W @ 18 m/s"
   - label: "Survivability"
     value: "+50%"
-paper_url: "https://arc.aiaa.org/doi/10.2514/6.2024-XXXXX"
 conference: "AIAA AVIATION 2024"
 ---
 import { MDPDemo } from '../../components/react/MDPDemo';
 import { ExplodedAssembly } from '../../components/react/ExplodedAssembly';
 import { FlightTrajectory } from '../../components/react/FlightTrajectory';
 import Figure from '../../components/Figure.astro';
+import Gallery from '../../components/Gallery.astro';
+import Video from '../../components/Video.astro';
 import seaplaneLayers from '../../data/seaplane-layers.json';
 import flightPath from '../../data/flight-path.json';
 
-Developing a solar-powered seaplane UAV for long-term autonomous ocean monitoring, addressing gaps in sustainable, low-altitude surveying. This project spans MDP-based mission planning, aerodynamic analysis, hardware integration, and flight testing of a 3.0 kg prototype.
+export const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+AHAB (Aquatic High-endurance Aerial Biomonitor) is a solar-powered seaplane UAV designed for persistent marine mammal monitoring over remote ocean regions. The project spans conceptual vehicle design with a novel wing-rotation mechanism, an MDP-based flight planning framework that outperforms heuristic approaches, and a phased prototype flight test campaign.
 
 ---
 
-<section id="mission-planning">
+<section id="motivation">
 
-## Mission & Energy Planning
+## The Problem
 
-A solar-powered UAV must decide when to fly, when to rest on the water and recharge, and how to route itself given uncertain weather and energy constraints. Simple threshold rules — fly when battery is above some level, land when it drops below another — are intuitive but suboptimal.
+Cetacean species — whales, dolphins, and porpoises — are experiencing sustained population declines worldwide, and marine biologists need better tools to study and protect them. Current monitoring platforms each have critical limitations: ship-based surveys are expensive and weather-dependent, fixed-wing UAVs like ScanEagle require manual launch and recovery with limited range, surface vehicles like SailDrone are too slow for focal-animal tracking, and passive acoustic buoys cannot be repositioned. A solar-powered seaplane fills this gap by combining persistent deployment through water landings and solar recharging, sufficient airspeed for focal monitoring, autonomous operation that eliminates ship-based recovery costs, and dual-modality sensing — visual survey while airborne, acoustic monitoring via hydrophone while floating.
 
-I developed a Markov Decision Process framework solved via dynamic programming that governs flight planning for long-duration missions, balancing energy constraints and environmental risks. This improved mission survivability by 50% over baseline threshold algorithms.
+</section>
 
-The vehicle must decide when to fly and when to rest on the water to recharge. Can you design a rule that outperforms the optimal policy?
+---
+
+<section id="conceptual-design">
+
+## Conceptual Design
+
+The seaplane's design integrates aerodynamic performance, hydrostatic stability, and solar energy harvesting into a single airframe. A flying hull configuration was selected over floatplane and amphibious alternatives for its reduced structural weight and better takeoff performance in rough seas.
+
+The design process iterates through geometry definition, mass estimation, parasitic drag analysis in OpenVSP, endurance calculation, and hydrostatic stability checks until all requirements are met. Key geometric parameters — wing span, beam width, deadrise angle, and forebody/sternpost proportions — are tuned to balance flight efficiency against water stability.
+
+<ExplodedAssembly client:visible layers={seaplaneLayers} title="Seaplane Assembly" basePath={basePath} />
+
+A custom spanwise wing rotation mechanism enables solar tracking, yielding a 21.9% energy gain over fixed panels. Solar modeling with pvlib and Ascent Solar CIGS thin-film module parameters shows the vehicle can sustain 1.3 hours of flight per day in January and 2.3 hours in June at the target deployment latitude — meeting the mission requirement of at least 1 hour of flight per day year-round.
+
+<Figure src="/images/seaplane/placeholder-drag-polar.svg" alt="Drag polar plot" caption="VSPAero drag polar showing CL vs CD for cruise configuration" number={1} />
+
+<Figure src="/images/seaplane/placeholder-hydrostatic.svg" alt="Hydrostatic stability diagram" caption="Transverse metacentric height analysis for water landing configuration" number={2} />
+
+</section>
+
+---
+
+<section id="flight-planning">
+
+## Optimal Flight Planning
+
+A solar-powered seaplane must decide when to fly, when to rest on the water and recharge, and how to balance observation time against the risk of battery exhaustion or crash. Weather is stochastic — solar irradiance and wind speed vary unpredictably — so simple threshold rules ("fly when battery is above X, land when below Y") are intuitive but leave performance on the table.
+
+I formulated this as a Markov Decision Process and solved it via stochastic dynamic programming. The vehicle's state captures its battery level and operating mode (floating, flying, or failed), and at each time step the optimal policy selects from takeoff, cruise, land, or save energy based on current conditions. The value function is computed offline and stored onboard for real-time decision-making.
+
+The interactive demo below lets you try to design a threshold rule that outperforms the optimal policy — the key insight is that the MDP makes non-obvious decisions, like resting during a sunny period to build energy reserves for a risky overnight segment, that no simple threshold can replicate.
 
 <MDPDemo client:visible />
 
-The key insight: the optimal policy makes non-obvious decisions — like resting during a sunny period to build energy reserves for a risky overnight segment — that no simple threshold can replicate.
+Monte Carlo sensitivity studies across battery capacities, failure penalties, geographic locations, and seasonal conditions show the optimal policy consistently outperforms all threshold parameter combinations. Unlike threshold controllers that require location-specific tuning, the MDP adapts automatically to different environments.
 
-<Figure src="/images/seaplane/placeholder-mdp-policy.svg" alt="MDP policy visualization" caption="Optimal flight/rest policy across battery state and time-of-day dimensions" number={1} />
-
-</section>
-
----
-
-<section id="vehicle-design">
-
-## Vehicle Design & Analysis
-
-The seaplane's design integrates aerodynamic performance, hydrostatic stability, and solar energy harvesting into a single airframe.
-
-**Aerodynamic analysis** in VSPAero estimated drag polars, lift coefficients, and stability derivatives using finite difference methods. **Hydrostatic stability analysis** calculated transverse and longitudinal metacentric heights to ensure roll stability while floating. **Solar integration** uses Ascent Solar CIGS thin-film modules with an MPPT controller and Battery Management System for autonomous recharging. A custom **spanwise wing rotation system** enables solar tracking to maximize energy capture.
-
-<ExplodedAssembly client:visible layers={seaplaneLayers} title="Seaplane Assembly" />
-
-<Figure src="/images/seaplane/placeholder-drag-polar.svg" alt="Drag polar plot" caption="VSPAero drag polar showing CL vs CD for cruise configuration" number={2} />
-
-<Figure src="/images/seaplane/placeholder-hydrostatic.svg" alt="Hydrostatic stability diagram" caption="Transverse metacentric height analysis for water landing configuration" number={3} />
+<Figure src="/images/seaplane/placeholder-mdp-policy.svg" alt="MDP policy visualization" caption="Optimal flight/rest policy across battery state and time-of-day dimensions" number={3} />
 
 </section>
 
 ---
 
-<section id="build-test">
+<section id="prototype">
 
-## Build, Integrate & Test
+## Prototype: AHAB
 
-Constructed a prototype amphibious UAV at 3.0 kg. Fabrication included composites manufacturing and custom mechanism machining. Integrated solar modules, MPPT controller, BMS, and PX4 flight controller into the airframe.
+AHAB is a proof-of-concept prototype built to demonstrate that the airframe can execute the types of missions the MDP framework plans. Development follows a phased flight test approach: aerodynamic validation, hydrostatic and hydrodynamic validation, subsystem integration, and full mission demonstration.
 
-Conducted maiden flight testing: validated takeoff run of 100 ft and glide ratio of 6.4. Used flight logs to tune PX4 control parameters. Led a flight test program executing sorties that validated theoretical power models — 150W cruise at 18 m/s — and diagnosed critical hydrodynamic instabilities driving rapid design iterations.
+The airframe is 3D-printed in LW ASA, reinforced with carbon fiber spars and fiberglass, and waterproofed with marine-grade sealant and electronics potting. Modifications from the conceptual design include a V-tail for easier construction and sponsons for improved hydrostatic stability.
+
+<Figure src="/images/seaplane/Preflight.jpg" alt="AHAB prototype during pre-flight inspection" caption="AHAB during pre-flight inspection" number={4} wide={true} />
+
+### Phase 1: Aerodynamic Validation
+
+Phase 1 confirmed the airframe is flightworthy. AHAB flew with minimal trim corrections, significant excess thrust, and excess control authority in cruise. Measured performance: 3.75 kg all-up weight, ~150W cruise power at 17 m/s and 35% throttle, glide ratio of 6.5, and a 4–5 second takeoff run.
 
 <FlightTrajectory client:visible waypoints={flightPath} />
 
-<Figure src="/images/seaplane/placeholder-prototype.svg" alt="Seaplane prototype" caption="Completed prototype during pre-flight inspection" number={4} />
+<Video src="/images/seaplane/Takeoff.mov" caption="Phase 1 maiden flight takeoff" number={5} />
+
+### Phase 2: Hydrostatic & Hydrodynamic Validation
+
+Phase 2 validates water operations. The second prototype is fully waterproofed and hydrostatically stable. Waterproofing tests and low-speed taxi runs are complete. Remaining evaluation includes hump speed, planing behavior, step ventilation, and water takeoff.
+
+<Gallery label="Phase 2: Water Testing">
+<Video src="/images/seaplane/Low Speed Taxi Side View.mov" caption="Low-speed water taxi test" number={6} />
+<Video src="/images/seaplane/Step_Stability.mov" caption="Step stability evaluation" number={7} />
+</Gallery>
+
+### Future Phases
+
+Phase 3 integrates the wing rotation mechanism, self-righting controller, solar recharge system, and hydrophone winch. Phase 4 executes a complete mission cycle — takeoff, survey, landing, recharge — to validate the full concept of operations.
 
 </section>
 
 ---
 
-<section id="team-iteration">
+<section id="publications">
 
-## Team & Iteration
+## Publications
 
-Led a team of 8 undergraduate researchers, guiding them across machine design, composites manufacturing, controls, and flight testing.
+**B. A. Epstein** and J. D. Rogers, "Conceptual Design of a Low-Altitude Solar Powered Seaplane for Oceanic Monitoring," *AIAA AVIATION FORUM AND ASCEND 2024*, Las Vegas, Nevada, Jul. 2024.
 
-Diagnosed critical hydrodynamic instabilities from flight test data, driving rapid hull redesign. The original hull cross-section produced unacceptable spray patterns during water taxi, causing wing wetting and loss of solar panel efficiency. Iterative testing with modified hull geometries resolved the instability within two design cycles.
+**B. A. Epstein** and J. D. Rogers, "Optimal flight planning for marine mammal surveillance from a seaplane UAV," submitted to *AIAA Journal of Aircraft*, 2026.
 
-Iterative control parameter tuning from flight log analysis refined the PX4 gains for the seaplane's unique flight envelope — low wing loading and high aspect ratio demanded significantly different tuning from standard quadcopter or fixed-wing defaults.
-
-**Published:** B. Epstein and J. D. Rogers, "Conceptual Design of a Low-Altitude Solar Powered Seaplane for Oceanic Monitoring," AIAA AVIATION FORUM AND ASCEND 2024.
+Advisor: Dr. Jonathan Rogers, Aerial Robotics and Experimental Autonomy Lab (AREAL), Georgia Institute of Technology.
 
 </section>

@@ -8,11 +8,13 @@ interface Props {
 }
 
 const { src, alt, caption, number, wide = false } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const resolvedSrc = src.startsWith('/') ? `${base}${src}` : src;
 ---
 
 <figure class:list={["figure", { wide }]}>
   <div class="figure-media">
-    <img src={src} alt={alt} loading="lazy" />
+    <img src={resolvedSrc} alt={alt} loading="lazy" />
   </div>
   <figcaption>
     {number !== undefined && <span class="figure-number">Figure {number}</span>}

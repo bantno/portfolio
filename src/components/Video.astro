@@ -1,0 +1,23 @@
+---
+interface Props {
+  src: string;
+  caption: string;
+  number?: number;
+}
+
+const { src, caption, number } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const resolvedSrc = src.startsWith('/') ? `${base}${src}` : src;
+---
+
+<figure style="margin: var(--space-lg) 0;">
+  <div style="border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-bg-raised);">
+    <video src={resolvedSrc} controls preload="metadata" style="width:100%;display:block;"></video>
+  </div>
+  <figcaption style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-sm); line-height: 1.5;">
+    {number !== undefined && (
+      <span style="color: var(--color-accent); font-weight: 600; margin-right: var(--space-sm);">Figure {number} —</span>
+    )}
+    {caption}
+  </figcaption>
+</figure>

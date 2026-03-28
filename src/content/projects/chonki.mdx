@@ -26,7 +26,10 @@ import ResultProof from '../../components/ResultProof.astro';
 import Figure from '../../components/Figure.astro';
 import BeforeAfter from '../../components/BeforeAfter.astro';
 import Gallery from '../../components/Gallery.astro';
+import Video from '../../components/Video.astro';
 import chonkiLayers from '../../data/chonki-layers.json';
+
+export const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 <Figure src="/images/chonki/Chonkiv Hero.png" alt="Chonkiv combat robot" caption="Chonkiv — 2× NHRL Champion, #1 in the World" wide={true} />
 
@@ -62,7 +65,7 @@ Each competition season drove redesign: weapon geometry changes to improve bite 
   </div>
 </Gallery>
 
-<ExplodedAssembly client:visible layers={chonkiLayers} title="Chonki Assembly" />
+<ExplodedAssembly client:visible layers={chonkiLayers} title="Chonki Assembly" basePath={basePath} />
 
 ## Iteration
 
@@ -100,32 +103,18 @@ Chonkiv was a systematic redesign targeting every Chonkiii shortcoming:
 - **Electronics:** 3D-printed enclosures with dedicated battery slots and wire-routing channels replaced the previous loose wiring.
 - **Frame:** Puzzle-fit 7075 aluminum with M4 fasteners (up from M3), waterjet-cut to tight tolerances for a rigid chassis with minimal fastener reliance.
 
-<Figure src="/images/chonki/chonkiv_standard_config-2025-worlds.JPG" alt="Chonkiv in standard configuration" caption="Chonkiv (2023–2025)" number={8} />
-
-<div class="video-embed">
-  <iframe src="https://www.youtube.com/embed/6woa14Wu5s8" title="Chonkiv vs Ares — top two seeds at 2025 NHRL World Championship" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
+<Figure src="/images/chonki/chonkiv_both_copies_2025-worlds.JPG" alt="Both Chonkiv copies at 2025 NHRL World Championship" caption="Both Chonkiv copies at 2025 NHRL World Championship" number={8} />
 
 The result: a 16–3 record with 12 knockouts across 19 fights, two Golden Dumpster trophies, and a rise to #1 in the world — the most successful shell spinner campaign in modern featherweight competition.
 
 ## Gallery
 
-<Gallery label="Design & Build">
-  <Figure src="/images/chonki/chonkiv_shuffler_disassembled.jpg" alt="Chonkiv shuffler drivetrain disassembled" caption="Shuffler components — machined housings, motors, rolling elements" number={8} />
-  <Figure src="/images/chonki/chonkiv_shuffler_side-view.png" alt="Chonkiv shuffler pod CAD side view" caption="Shuffler pod CAD — wheel geometry and motor packaging" number={9} />
-  <Figure src="/images/chonki/chonkiv_electronics_layout-picture.png" alt="Chonkiv internal electronics layout" caption="Electronics with 3D-printed enclosures and wire routing" number={10} />
-  <Figure src="/images/chonki/chonkiv_both_copies_2025-worlds.JPG" alt="Both Chonkiv copies at 2025 NHRL World Championship" caption="Both Chonkiv copies at 2025 Worlds" number={11} />
-</Gallery>
+<Video src="/images/chonki/Chonkiv_Greatest_Hits_720p.mp4" caption="Chonkiv Greatest Hits" number={9} />
 
-<figure style="margin: var(--space-lg) 0;">
-  <div style="border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-bg-raised);">
-    <video src="/images/chonki/Chonkiv-vs-ARES---2025-World-Championships-30lb--720p.mp4" controls preload="metadata" style="width:100%;display:block;"></video>
-  </div>
-  <figcaption style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-sm); line-height: 1.5;">
-    <span style="color: var(--color-accent); font-weight: 600; margin-right: var(--space-sm);">Figure 12 —</span>
-    Chonkiv vs Ares — 2025 NHRL World Championship semifinal
-  </figcaption>
-</figure>
+<Gallery label="Design & Build">
+  <Figure src="/images/chonki/chonkiv_shuffler_disassembled.jpg" alt="Chonkiv shuffler drivetrain disassembled" caption="Shuffler components — machined housings, motors, rolling elements" number={10} />
+  <Figure src="/images/chonki/chonkiv_electronics_layout-picture.png" alt="Chonkiv internal electronics layout" caption="Electronics with 3D-printed enclosures and wire routing" number={11} />
+</Gallery>
 
 <Figure src="/images/placeholder-gif.svg" alt="Chonkiv self-righting" caption="Chonkiv self-righting — placeholder" number={13} />
 

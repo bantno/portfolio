@@ -3,10 +3,8 @@ import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 
 export default defineConfig({
-  // For GitHub Pages deployment, set `site` to your GitHub Pages URL
-  // and `base` to your repository name (e.g., "/GCS").
-  // site: "https://<your-username>.github.io",
-  // base: "/GCS",
+  site: "https://Bantno.github.io",
+  base: "/portfolio",
   output: "static",
   integrations: [react(), mdx()],
 });

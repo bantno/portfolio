@@ -16,9 +16,10 @@ interface Layer {
 interface Props {
   layers: Layer[];
   title: string;
+  basePath?: string;
 }
 
-export function ExplodedAssembly({ layers, title }: Props) {
+export function ExplodedAssembly({ layers, title, basePath = "" }: Props) {
   const [step, setStep] = useState(0);
   const total = layers.length;
   const current = layers[step];
@@ -111,7 +112,7 @@ export function ExplodedAssembly({ layers, title }: Props) {
               }}
             >
               <img
-                src={layer.svgPath}
+                src={`${basePath}${layer.svgPath}`}
                 alt={layer.label}
                 style={{
                   maxWidth: "80%",

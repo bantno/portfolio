@@ -15,7 +15,7 @@ const { title = "Brian Epstein — Robotics &amp; Autonomy" } = Astro.props;
       name="description"
       content="Brian Epstein — PhD Mechanical Engineering, Georgia Tech. Autonomous systems, controls, and hardware that works in the real world."
     />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg`} />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
