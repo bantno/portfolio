@@ -1,9 +1,22 @@
 ---
 interface Props {
   title?: string;
+  description?: string;
+  image?: string;
 }
 
-const { title = "Brian Epstein — Robotics &amp; Autonomy" } = Astro.props;
+const {
+  title = "Brian Epstein — Robotics & Autonomy",
+  description = "Brian Epstein — PhD Mechanical Engineering, Georgia Tech. Autonomous systems, controls, and hardware that works in the real world.",
+  image = "/images/hero.jpg",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+// Absolute URLs for canonical + social cards. Astro.site is set in astro.config.mjs.
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.pathname;
+const imageAbs = Astro.site
+  ? new URL(`${base}${image}`, Astro.site).href
+  : `${base}${image}`;
 ---
 
 <!doctype html>
@@ -11,11 +24,23 @@ const { title = "Brian Epstein — Robotics &amp; Autonomy" } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="Brian Epstein — PhD Mechanical Engineering, Georgia Tech. Autonomous systems, controls, and hardware that works in the real world."
-    />
-    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg`} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageAbs} />
+    <meta property="og:url" content={canonical} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageAbs} />
+
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"

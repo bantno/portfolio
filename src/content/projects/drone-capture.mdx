@@ -1,12 +1,13 @@
 ---
 title: "Autonomous Drone Capture System"
-summary: "Full-stack autonomy for tracking and capturing rogue drones in indoor environments."
+summary: "Autonomy for capturing rogue drones in indoor environments."
 status: "Complete"
 domain: "Aerial Autonomy"
 tier: featured
 featured: true
-order: 4
+order: 5
 date_range: "August 2022 – May 2023"
+thumbnail: "/images/drone-capture/drone_capture_drone.JPEG"
 tags:
   - autonomy
   - ROS2
@@ -26,14 +27,17 @@ metrics:
 import { RRTVisualizer } from '../../components/react/RRTVisualizer';
 import { AnnotatedFigure } from '../../components/react/AnnotatedFigure';
 import Figure from '../../components/Figure.astro';
+import Video from '../../components/Video.astro';
+
+<Figure src="/images/drone-capture/drone_capture_drone.JPEG" alt="Aerial interceptor drone with grasping payload" caption="The aerial interceptor drone with its mechanical grasping payload." wide={true} />
 
 ## The Challenge
 
-Autonomously track and capture rogue drones in indoor, GPS-denied, densely populated environments — a scenario where traditional GPS-based navigation fails and obstacle avoidance must happen in real time.
+Autonomously capture rogue drones in indoor, GPS-denied, densely populated environments — a scenario where traditional GPS-based navigation fails and obstacle avoidance must happen in real time.
 
 ## Approach
 
-Designed and implemented a full-stack autonomy solution for an aerial interceptor drone. Architected a ROS2-based control stack: Raspberry Pi for high-level logic, Pixhawk 6X for low-level flight control, connected via Ethernet.
+Designed and implemented an autonomy solution for an aerial interceptor drone. Architected a ROS2-based control stack: Raspberry Pi for high-level logic, Pixhawk 6X for low-level flight control, connected via Ethernet.
 
 Integrated Vicon motion capture into the EKF2 estimator for precise indoor positioning, replacing GPS with sub-millimeter accuracy. Developed trajectory generation starting with 2D/3D A* search smoothed with piecewise Bezier curves, later transitioning to bidirectional RRT* achieving 3 Hz replanning rates.
 
@@ -59,6 +63,8 @@ The mechanical grasper uses spring-loaded jaws that close on contact, with a ser
     { x: 45, y: 75, label: "Mounting interface", description: "Dovetail mount to drone frame — tool-free installation for field swaps" }
   ]}
 />
+
+<Video src="/images/drone-capture/drone_capture_flight_with_basket.MP4" caption="Capture flight test with the grasping basket payload." />
 
 ## Iteration
 

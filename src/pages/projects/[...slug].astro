@@ -5,7 +5,7 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
   return projects
-    .filter((p) => p.data.tier !== "brief")
+    .filter((p) => p.data.tier !== "brief" && !p.data.draft)
     .map((p) => ({
       params: { slug: p.id.replace(/\.mdx?$/, "") },
       props: { entry: p },

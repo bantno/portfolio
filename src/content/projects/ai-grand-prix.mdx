@@ -1,0 +1,47 @@
+---
+title: "AI Grand Prix — Autonomous Drone Racing"
+summary: "Guidance and control software for an AI-piloted racing drone competing in the Anduril-backed AI Grand Prix: a spline path planner, an SE(3) geometric tracking controller, and a manual radio-control path, all driving the drone over MAVLink."
+status: "Active"
+domain: "Aerial Autonomy"
+tier: standard
+featured: true
+order: 4
+date_range: "May 2026 – Present"
+thumbnail: "/images/ai-grand-prix/AI_of_Sauron_Q1_720p.mp4"
+tags:
+  - autonomy
+  - drone racing
+  - guidance & control
+  - MAVLink
+  - path planning
+  - flight control
+metrics:
+  - label: "Cruise"
+    value: "13 m/s"
+  - label: "Controller"
+    value: "SE(3) Geometric"
+  - label: "Prize Pool"
+    value: "$500K"
+---
+
+## The Competition
+
+The [AI Grand Prix](https://www.theaigrandprix.com/) is an autonomous drone racing competition conceived by Anduril founder Palmer Luckey in partnership with the Drone Champions League, Neros Technologies, and JobsOhio. Teams write autonomy software that pilots high-speed racing drones through professional courses with **zero human intervention** — using only onboard sensing, with no GPS or absolute position data. All teams fly identical Neros-built racing drones for complete competitive parity, competing for a share of a $500,000 prize pool and engineering roles at Anduril. The roadmap runs through virtual qualifiers into a physical qualifier in Southern California (September 2026) and the live finals in Ohio (November 2026).
+
+## Current State of the Software
+
+Our team flies against the official AI-GP simulator from a Python control client that talks to the drone over MAVLink (`pymavlink`) on a UDP link. The system as it stands:
+
+**Race setup and start.** On launch, the client repeatedly resets the simulator and validates the returned track frame — re-resetting until the first gate sits a sane distance from the spawn point, which guards against corrupted NED origins that would otherwise place gates kilometres away. Once a clean frame is captured it builds the path, arms, and flies the loop until the race-finish flag is reported, logging state throughout for post-run plotting.
+
+**Path planning.** `PathPlanner` fits a smooth cubic Hermite spline through the race gates. Each gate's orientation quaternion sets the fly-through tangent at that knot, the waypoint is lifted to the centre of the 1.5 m gate opening, and the path is extended past the final gate so the drone carries momentum through the finish instead of stalling on it. The spline is reparameterized by arc length, exposing progress-based queries for the desired position, velocity, and a centripetal-curvature acceleration feed-forward, plus closest-point and look-ahead lookups.
+
+**Flight control.** The active autonomous mode is an SE(3) geometric tracking controller, adapted to the simulator's body-rate command interface. Each cycle it pulls the progress-based spline target, runs a translational PD law (with the curvature feed-forward) to a commanded world acceleration, decomposes that into yaw-aware roll/pitch setpoints, converts attitude error into a body-rate command with a non-singular yaw law that looks ahead along the spline for stable heading capture, and computes a tilt-compensated collective throttle from an empirically calibrated thrust map. A `drone_params.json` calibration file captures the throttle map and per-axis rate signs and gains so the same controller transfers cleanly across vehicle tuning.
+
+**Manual control.** Alongside the autonomy, the client supports direct human flight from a physical EdgeTX/RadioMaster radio plugged in as a USB joystick, as well as a keyboard fallback — used to characterise the vehicle dynamics and the simulator interface before trusting the closed-loop controller.
+
+## My Contributions
+
+- **Proposed the geometric tracking controller** as the team's autonomous control approach — the SE(3) spline-tracking law described above, which is the controller the team flies.
+- **Built the manual radio-control path.** I wrote the `EdgeTXController` module that reads an EdgeTX/RadioMaster radio as a USB HID joystick (via `pygame`), applies a center deadzone, and normalizes the four sticks into roll/pitch/yaw body rates plus collective thrust, with a configurable AETR axis map and sign-inversion flags for any radio. I wired it into the main controller to stream `set_attitude_target` commands, with a failsafe that snaps and holds the current position if the radio is unplugged or drops mid-flight.
+- **Tuned the controller.** I tuned the geometric tracking controller's gains — re-balancing the position and velocity gains, raising the cruise speed, extending the yaw look-ahead horizon, relaxing the tilt clamp for more aggressive racing attitudes, and adjusting the curvature feed-forward and control-loop rate for smooth, fast, stable tracking through the course.

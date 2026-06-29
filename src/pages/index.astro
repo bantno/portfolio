@@ -5,7 +5,12 @@ import Footer from "../components/Footer.astro";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
-const sorted = projects.sort((a, b) => a.data.order - b.data.order);
+const sorted = projects
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+const isVideoFile = (src: string) => /\.(mp4|webm|mov|ogg)$/i.test(src);
 
 const statusClass: Record<string, string> = {
   Active: "active",
@@ -70,6 +75,17 @@ const statusClass: Record<string, string> = {
                       allowfullscreen
                       loading="lazy"
                     />
+                  ) : d.thumbnail && isVideoFile(d.thumbnail) ? (
+                    <video
+                      src={`${BASE}${d.thumbnail}`}
+                      autoplay
+                      loop
+                      muted
+                      playsinline
+                      preload="metadata"
+                    />
+                  ) : d.thumbnail ? (
+                    <img src={`${BASE}${d.thumbnail}`} alt={d.title} loading="lazy" />
                   ) : (
                     <div class="media-placeholder">
                       <span class="placeholder-icon">⬡</span>
@@ -252,10 +268,14 @@ const statusClass: Record<string, string> = {
     background: var(--color-bg-raised);
     border-bottom: 1px solid var(--color-border);
   }
-  .card-media iframe {
+  .card-media iframe,
+  .card-media video,
+  .card-media img {
     width: 100%;
     height: 100%;
     border: none;
+    object-fit: cover;
+    display: block;
   }
 
   .media-placeholder {

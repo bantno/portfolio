@@ -16,3 +16,6 @@ node_modules/
 # OS
 .DS_Store
 Thumbs.db
+
+# working docs (source PDFs for figure extraction, not deployed)
+inbox/

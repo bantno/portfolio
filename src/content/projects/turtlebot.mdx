@@ -1,36 +1,46 @@
 ---
 title: "Turtlebot Maze Navigation"
-summary: "Autonomous maze navigation using computer vision for sign detection, validated from Gazebo simulation to real hardware."
+summary: "Autonomous TurtleBot3 maze solver that drives by LIDAR, reads directional signs with a KNN vision classifier, and turns by odometry — built in Gazebo and run on real hardware."
 status: "Complete"
 domain: "Autonomous Navigation"
 tier: standard
 featured: true
-order: 5
+order: 6
 date_range: "January – May 2023"
 tags:
   - computer vision
   - ROS2
-  - simulation
+  - LIDAR
+  - state machine
   - Gazebo
   - autonomous navigation
 metrics:
-  - label: "Pipeline"
-    value: "Vision → Nav"
+  - label: "Sign classes"
+    value: "5 maneuvers"
+  - label: "Classifier"
+    value: "KNN (k=3)"
   - label: "Validation"
-    value: "Sim-to-Real"
+    value: "Sim + Hardware"
 ---
 import Figure from '../../components/Figure.astro';
+import Video from '../../components/Video.astro';
 
 ## Problem & Approach
 
-Implemented autonomous maze navigation for a Turtlebot using computer vision to detect and interpret directional signs. The perception pipeline processes camera frames to detect signs, classify their directional content, and feed navigation decisions to the motion planner.
+Built an autonomous maze solver for a TurtleBot3 (ROS2) that navigates by reacting to directional signs posted at each decision point. The robot is driven by a single state-machine node that interleaves three sensing modalities — LIDAR for proximity, the camera for sign reading, and odometry for heading — into a simple, reliable loop:
 
-The system was developed entirely in Gazebo simulation, then validated on real Turtlebot hardware — the same perception and navigation pipeline running in both environments with no code changes. This sim-to-real transfer validated the robustness of the vision processing pipeline against real-world lighting variation and sensor noise.
+- **Drive** forward on `/cmd_vel` until the LIDAR's forward segment averages under 0.6 m, indicating a wall (and therefore a sign) ahead.
+- **Read the sign.** The camera frame is segmented with an HSV color threshold, the largest qualifying contour is extracted as the sign region, cropped, and resized to a 33×25 binary patch. A KNN classifier (k=3, trained on ~130 labeled images) maps that patch to one of five maneuvers: turn left, turn right, U-turn, stop, or goal reached.
+- **Turn** to the new heading using an odometry-based proportional controller (dead reckoning), then resume driving.
+
+I started with the ROS2 Nav2 stack but iterated away from it to this lightweight dead-reckoning approach, which proved far more repeatable in the constrained maze than full path planning.
 
 ## Evidence
 
 <Figure src="/images/turtlebot/placeholder-turtlebot-sim.svg" alt="Turtlebot navigating maze in Gazebo" caption="Gazebo simulation environment with directional signs placed at decision points" number={1} />
 
-<Figure src="/images/turtlebot/placeholder-vision-pipeline.svg" alt="Vision pipeline architecture" caption="Camera input → sign detection → classification → navigation decision" number={2} />
+<Figure src="/images/turtlebot/placeholder-vision-pipeline.svg" alt="Vision pipeline architecture" caption="Camera frame → HSV threshold → contour ROI → 33×25 patch → KNN classification → maneuver" number={2} />
 
-The key message: identical code running in simulation and on hardware. The Gazebo environment closely matched real-world conditions — camera FOV, sign placement distances, and lighting — so the trained detection pipeline transferred without retuning.
+The system was developed in Gazebo — which required adding a simulated Raspberry Pi camera to the TurtleBot3 Burger model (custom SDF/URDF) — and then run on real hardware. The perception and control logic is shared across both; a single flag swaps the camera interface (Gazebo's raw `Image` on `/camera/image_raw` for a Raspberry Pi `CompressedImage` published with best-effort QoS to survive the WiFi link). Keeping the classifier and heading control identical across environments is what let the sim-tuned pipeline hold up against real-world lighting and sensor noise.
+
+<Video src="/images/turtlebot/turtlebot_in_maze.MP4" caption="The TurtleBot3 completing the maze (5× speed) — driving by LIDAR, stopping to read each sign, and turning by odometry to the goal." number={3} />

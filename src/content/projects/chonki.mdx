@@ -19,7 +19,7 @@ metrics:
     value: "#1 World"
   - label: "Views"
     value: "50M+"
-video: "https://www.youtube.com/embed/CkGYSpqJTt8"
+thumbnail: "/images/chonki/Collateral_Damage_720p.mp4"
 ---
 import { ExplodedAssembly } from '../../components/react/ExplodedAssembly';
 import ResultProof from '../../components/ResultProof.astro';
@@ -81,7 +81,9 @@ The first physical Chonki. Big, loud, and impossible to ignore — the shufflers
 
 <Gallery>
   <Figure src="/images/chonki/Chonkii.jpg" alt="Chonkii at competition" caption="Chonkii (2021–2022)" number={4} />
-  <Figure src="/images/placeholder-gif.svg" alt="Chonkii in action" caption="Chonkii competition footage — placeholder" number={5} />
+  <div class="video-embed">
+    <iframe src="https://www.youtube.com/embed/EemvALXPB2o?start=5840" title="Chonkii combat footage" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
 </Gallery>
 
 ### Chonkiii (2022–2023)
@@ -90,8 +92,12 @@ A major design leap. Chonkiii introduced a hardened 4140 alloy steel shell — p
 
 <Gallery>
   <Figure src="/images/chonki/Chonkiii.png" alt="Chonkiii at competition" caption="Chonkiii (2022–2023)" number={6} />
-  <Figure src="/images/placeholder-gif.svg" alt="Chonkiii in action" caption="Chonkiii competition footage — placeholder" number={7} />
+  <Figure src="/images/chonki/chonkiii_team_with_tsunami_team.JPEG" alt="Chonkiii team alongside Team Tsunami" caption="The Chonkiii team alongside Team Tsunami" number={7} />
 </Gallery>
+
+<Video src="/images/chonki/chonkiii_vs_yahoo.mp4" caption="Chonkiii vs. Yahoo at NHRL" />
+
+<Video src="/images/chonki/chonkiii_self_righting.mp4" caption="Chonkiii self-righting after being flipped" />
 
 ### Chonkiv (2023–2025)
 

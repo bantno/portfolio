@@ -11,8 +11,10 @@ const projects = defineCollection({
     order: z.number(),
     tier: z.enum(["flagship", "featured", "standard", "brief"]),
     featured: z.boolean().default(false),
+    draft: z.boolean().default(false),
     date_range: z.string(),
     hero_image: z.string().optional(),
+    thumbnail: z.string().optional(),
     metrics: z
       .array(z.object({ label: z.string(), value: z.string() }))
       .min(2)

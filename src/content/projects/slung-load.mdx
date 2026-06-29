@@ -1,46 +1,59 @@
 ---
-title: "Quadcopter Slung Load Input Shaping"
-summary: "Input shaping control for slung load oscillation suppression on a PX4 quadcopter with ROS2 offboard control."
+title: "Input Shaping for Slung-Load Quadcopter Flight"
+summary: "Two-mode EI input shaping to suppress double-pendulum payload oscillation on a PX4 quadcopter, validated from Gazebo SITL to Vicon-tracked hardware flight."
 status: "Complete"
 domain: "Controls"
 tier: standard
 featured: true
-order: 6
+order: 7
 date_range: "August – December 2023"
 tags:
   - controls
+  - input shaping
   - ROS2
   - PX4
   - simulation
+  - Gazebo
 metrics:
-  - label: "Control"
-    value: "Input Shaping"
+  - label: "Payload Damping"
+    value: "45.9%"
+  - label: "Shaper"
+    value: "2-Mode EI"
   - label: "Validation"
     value: "SITL → Hardware"
 ---
-import { AnnotatedFigure } from '../../components/react/AnnotatedFigure';
 import Figure from '../../components/Figure.astro';
 
-## Problem & Approach
+As drone delivery scales up — Amazon Prime Air, UPS Flight Forward, and FAA-cleared beyond-line-of-sight operations — quadcopters increasingly carry payloads slung beneath them on a cable. A suspended payload behaves as a pendulum: every acceleration of the vehicle excites a swing that degrades tracking accuracy and, in aggressive maneuvers, can destabilize the aircraft. This project applies **input shaping** to suppress that oscillation without any payload-state feedback, validating the approach from simulation through to hardware flight.
 
-Slung loads cause problematic oscillations during quadcopter flight — the pendulum dynamics of a suspended payload excite the vehicle's attitude controller, degrading tracking performance and risking instability during aggressive maneuvers.
+*Course project (ME6404 — Command Generation for Dynamic Systems, Fall 2023), completed with a four-person team.*
 
-Implemented input shaping on a slung load quadcopter using PX4-ROS2 offboard control. The input shaper modifies the commanded trajectory to suppress the payload's natural frequency, reducing oscillation amplitude without requiring payload state feedback.
+## Modeling the System
 
-SITL testing in Gazebo reproduced the quadcopter and slung load dynamics, validated with real-world flight testing. The same ROS2 offboard control node ran in both environments.
+The cable, hook, and payload form a **double pendulum** hanging from the quadcopter. For shaper design the vehicle dynamics are ignored and the system is treated as a payload mass on a hook mass, each on its own cable segment, giving two distinct natural frequencies — the two modes the shaper must cancel. The initial bench configuration (mₚ = 30 g, m_h = 68 g, L₁ = L₂ = 1 m) places those modes at **2.29 and 8.56 rad/s**; lengthening both segments to 2 m lowers them to **1.62 and 6.05 rad/s**, slowing the dynamics so the vehicle can better track the shaped command.
+
+## Shaper Design
+
+Input shaping convolves each commanded motion with a sequence of timed impulses so the vibration induced by one impulse is cancelled by the next. An **Extra-Insensitive (EI)** shaper is used because it tolerates error in the estimated natural frequency — important here, since payload mass and cable length vary between flights. A single EI shaper handles one mode; to address both pendulum frequencies, two EI shapers (one tuned to each natural frequency) are **convolved together** into a single nine-impulse command that attenuates both modes, at the cost of a longer command duration.
 
 ## Control Architecture
 
-<AnnotatedFigure
-  client:visible
-  src="/images/slung-load/placeholder-slung-load-arch.svg"
-  alt="Slung load control architecture"
-  hotspots={[
-    { x: 15, y: 50, label: "Trajectory command", description: "Waypoint sequence from mission planner — input to the shaping filter" },
-    { x: 40, y: 50, label: "Input shaper", description: "ZVD shaper tuned to the slung load natural frequency — splits each impulse into three timed sub-impulses" },
-    { x: 65, y: 35, label: "PX4 offboard", description: "ROS2 offboard control node sends shaped setpoints to PX4 via MAVROS" },
-    { x: 85, y: 50, label: "Quadcopter + payload", description: "Physical system: quadcopter with cable-suspended payload" }
-  ]}
-/>
+The shaped trajectory is sent to a PX4 flight controller through a ROS 2 offboard-control node. PX4 runs a cascaded series of PID loops — position, velocity, attitude, and rate — that resolve the setpoint into per-motor thrust through the mixer. Here X and Y use velocity control while Z uses position control; velocity control on the vertical axis caused the drone to sink, so position control was retained for altitude.
 
-<Figure src="/images/slung-load/placeholder-input-shaping-comparison.svg" alt="Response comparison with and without input shaping" caption="Payload swing angle over time: unshaped command (red) vs input-shaped command (blue)" number={1} />
+## Simulation
+
+The quadcopter and double-pendulum payload were first reproduced in **Gazebo** (ROS 2 Humble), driven by the same offboard-control node later used on hardware. Each test trajectory was flown both unshaped and shaped so the residual swing could be compared directly.
+
+## Hardware
+
+The controller was deployed on a **Holybro X500** quadcopter (≈2 kg, 3:1 thrust-to-weight) flying a Pixhawk 6X, with a Raspberry Pi and an offboard companion computer running the ROS 2 control node. A **Vicon** motion-capture system reported position and payload swing at 100 Hz, providing ground truth for autonomous flight and oscillation measurement.
+
+<Figure src="/images/slung-load/hardware.png" alt="Holybro X500 quadcopter with suspended payload and instrumentation labeled" caption="Hardware platform: Holybro X500 with Pixhawk 6X flight controller, Raspberry Pi, and a cable-suspended hook-and-payload pendulum, tracked by Vicon at 100 Hz." number={1} />
+
+## Test Trajectories & Results
+
+Four trajectories were flown at 1 m/s: a 5 m straight line, an L-shaped corner (5 m then 3 m), the same corner with a one-second pause at the turn, and a 3 m-diameter circle. On the straight-line maneuver the shaper cut peak-to-peak **payload** swing from 675 mm to 365 mm (**45.9% reduction**) and **hook** swing from 185 mm to 145 mm (**21.6% reduction**) — the larger, slower payload mode responded best. Adding a one-second pause at the corner gave **24.2% (payload)** and **31.5% (hook)** reductions along the travel axis. The continuous circle was the hardest case (7.5%/18.6% payload in x/y; 4.3%/4% hook), because the vehicle never stops re-exciting the pendulum.
+
+## Conclusions & Future Work
+
+The shaper consistently reduced oscillation, most strongly on the slower payload mode and on maneuvers that include a pause. The main limitation was the **velocity controller's bandwidth** — the pendulum dynamics were fast enough that the vehicle could not perfectly track the shaped command, and mounting the payload away from the vehicle's center of mass introduced additional coupling. The clearest paths to improvement: a higher-bandwidth velocity controller that tracks shaped commands more precisely, slower pendulum dynamics (longer cable), mounting the payload nearer the vehicle CG, and feedforward control to eliminate the phase delay in velocity tracking.

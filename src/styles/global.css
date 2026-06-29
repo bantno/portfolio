@@ -20,11 +20,9 @@
   --color-status-complete: #4788e8;
   --color-status-dev:      #e8a647;
 
-  /* ── Interactive component colors (set your final values) ── */
+  /* ── Interactive component colors (MDPDemo policy comparison) ── */
   --color-user-policy:     #ff6b6b;
   --color-optimal-policy:  #51cf66;
-  --color-predicted:       #748ffc;
-  --color-measured:        #ffd43b;
 
   /* ── Typography ──────────────────────────────────────────── */
   --font-mono:      "JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", monospace;
