@@ -17,8 +17,8 @@ tags:
   - mechanical design
   - fabrication
 metrics:
-  - label: "Replanning"
-    value: "3 Hz"
+  - label: "Planner"
+    value: "OMPL RRT*"
   - label: "Environment"
     value: "Indoor"
   - label: "Payload"
@@ -37,15 +37,17 @@ Autonomously capture rogue drones in indoor, GPS-denied, densely populated envir
 
 ## Approach
 
-Designed and implemented an autonomy solution for an aerial interceptor drone. Architected a ROS2-based control stack: Raspberry Pi for high-level logic, Pixhawk 6X for low-level flight control, connected via Ethernet.
+Designed and implemented an autonomy solution for an aerial interceptor drone. Architected a ROS2-based control stack: a Raspberry Pi companion computer running the high-level planning and state logic, and a Pixhawk flight controller running PX4 for low-level flight control. The two are bridged with micro-XRCE-DDS (the micro-ROS agent), so ROS2 nodes command PX4 directly through its offboard interface.
 
-Integrated Vicon motion capture into the EKF2 estimator for precise indoor positioning, replacing GPS with sub-millimeter accuracy. Developed trajectory generation starting with 2D/3D A* search smoothed with piecewise Bezier curves, later transitioning to bidirectional RRT* achieving 3 Hz replanning rates.
+Indoor positioning replaces GPS with a Vicon motion-capture feed fused into PX4's EKF2 estimator. The interceptor treats its target as a second vehicle — subscribing to the target's local position over a separate PX4 namespace — and plans a trajectory to intercept and capture it from above.
+
+Trajectory generation evolved in two stages. The first was a closed-form quadratic Bézier planner that curves up and over toward the target; the production planner is an OMPL RRT* search over the 3D workspace with spherical obstacle constraints, smoothed with a Bézier or B-spline fit and streamed to PX4 as a Bézier trajectory setpoint.
 
 Designed and 3D printed (PLA, NylonX) a mechanical grasping payload with spring-loaded jaws and servo-actuated release mechanism, capable of securing a target drone in flight.
 
 ## Path Planning
 
-The RRT* algorithm explores the configuration space by randomly sampling points, connecting them to the nearest existing node, and rewiring the tree when shorter paths are found. This approach handles arbitrary obstacle geometries and supports real-time replanning as the target moves.
+The production planner wraps OMPL's RRT*: it explores the configuration space by randomly sampling points, connecting each to the nearest existing node, and rewiring the tree whenever a shorter path is found. It plans over a bounded 3D workspace (±4 m per axis) against spherical obstacle constraints, with a goal-sampling bias of 0.1 and a 1.0 m extension step. Each solve runs under a fixed time budget (~0.45 s) so the tree can be regrown as the target moves, and a path-validity check enforces that the final approach comes from above the target. The resulting waypoints are smoothed with a Bézier or B-spline fit before being handed to PX4.
 
 <RRTVisualizer client:visible />
 
@@ -68,6 +70,6 @@ The mechanical grasper uses spring-loaded jaws that close on contact, with a ser
 
 ## Iteration
 
-The transition from A* to bidirectional RRT* was driven by planning time constraints — A* with Bezier smoothing could not consistently hit the 3 Hz target in cluttered environments. Bidirectional RRT* cut median planning time by 60%, enabling reliable real-time operation.
+The trajectory stack started as a single closed-form quadratic Bézier curve — cheap to compute and smooth, but blind to obstacles and only viable in open space. Moving to OMPL RRT* added true obstacle avoidance and the approach-from-above constraint needed for a reliable capture, while the fixed per-solve time budget keeps planning fast enough to re-plan against a moving target. The Bézier/B-spline post-smoothing carried over from the original approach to keep the executed path flyable.
 
 The grasping mechanism went through three revisions. V1 used rigid jaws that transferred impact loads directly to the drone frame, causing attitude disturbances. V2 added a compliant wrist joint that absorbed impact energy. V3 — the final design — combined the compliant wrist with spring-loaded jaws, eliminating the need for an actuator to close the gripper and reducing weight by 40%.

@@ -6,11 +6,12 @@ interface Point {
   y: number;
 }
 
+// Spherical obstacle (rendered as a circle in this 2D vertical slice), matching
+// the OMPL planner's distance-to-center collision model.
 interface Obstacle {
   x: number;
   y: number;
-  width: number;
-  height: number;
+  r: number;
 }
 
 interface TreeNode {
@@ -20,35 +21,30 @@ interface TreeNode {
   cost: number;
 }
 
-const STEP_SIZE = 25;
-const GOAL_RADIUS = 20;
+// Mirrors path_planner_base.py: RRTstar(setRange=1.0, setGoalBias=0.1),
+// path-length optimization with rewiring, then cubic-Bézier smoothing.
+const STEP_SIZE = 25; // planner extension range
+const GOAL_BIAS = 0.1;
+const GOAL_RADIUS = 18; // acceptance ball around the approach point
 const REWIRE_RADIUS = 50;
 const NODES_PER_FRAME = 3;
+const MAX_NODES = 1400;
+const BEZIER_SAMPLES = 24; // samples per cubic-Bézier segment
 
 function distance(a: Point, b: Point): number {
   return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
 }
 
-function segmentIntersectsRect(
-  p1: Point,
-  p2: Point,
-  obs: Obstacle
-): boolean {
-  const steps = Math.ceil(distance(p1, p2) / 3);
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const x = p1.x + (p2.x - p1.x) * t;
-    const y = p1.y + (p2.y - p1.y) * t;
-    if (
-      x >= obs.x &&
-      x <= obs.x + obs.width &&
-      y >= obs.y &&
-      y <= obs.y + obs.height
-    ) {
-      return true;
-    }
-  }
-  return false;
+// Distance from circle center to segment p1->p2; collision if <= radius.
+function segmentIntersectsCircle(p1: Point, p2: Point, obs: Obstacle): boolean {
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  const len2 = dx * dx + dy * dy;
+  let t = len2 === 0 ? 0 : ((obs.x - p1.x) * dx + (obs.y - p1.y) * dy) / len2;
+  t = Math.max(0, Math.min(1, t));
+  const px = p1.x + t * dx;
+  const py = p1.y + t * dy;
+  return distance({ x: px, y: py }, obs) <= obs.r;
 }
 
 function isCollisionFree(
@@ -56,7 +52,7 @@ function isCollisionFree(
   p2: Point,
   obstacles: Obstacle[]
 ): boolean {
-  return !obstacles.some((obs) => segmentIntersectsRect(p1, p2, obs));
+  return !obstacles.some((obs) => segmentIntersectsCircle(p1, p2, obs));
 }
 
 function steer(from: Point, to: Point, stepSize: number): Point {
@@ -89,8 +85,44 @@ function tracePath(tree: TreeNode[], goalIdx: number): number[] {
   return path;
 }
 
+// Port of compute_bezier_points: one cubic Bézier segment.
+function cubicBezier(p0: Point, p1: Point, p2: Point, p3: Point): Point[] {
+  const pts: Point[] = [];
+  for (let i = 0; i < BEZIER_SAMPLES; i++) {
+    const t = i / (BEZIER_SAMPLES - 1);
+    const mt = 1 - t;
+    pts.push({
+      x: mt ** 3 * p0.x + 3 * mt ** 2 * t * p1.x + 3 * mt * t ** 2 * p2.x + t ** 3 * p3.x,
+      y: mt ** 3 * p0.y + 3 * mt ** 2 * t * p1.y + 3 * mt * t ** 2 * p2.y + t ** 3 * p3.y,
+    });
+  }
+  return pts;
+}
+
+// Port of smooth_with_bezier: walk the path in groups of four control points,
+// fitting a cubic Bézier to each (indices clamped to the last point).
+function smoothWithBezier(points: Point[]): Point[] {
+  const N = points.length;
+  if (N < 4) return points;
+  const out: Point[] = [];
+  for (let i = 0; i < N - 1; i += 3) {
+    const p0 = points[i];
+    const p1 = points[Math.min(i + 1, N - 1)];
+    const p2 = points[Math.min(i + 2, N - 1)];
+    const p3 = points[Math.min(i + 3, N - 1)];
+    out.push(...cubicBezier(p0, p1, p2, p3));
+  }
+  return out;
+}
+
 export function RRTVisualizer() {
-  const { bounds, start, goal: defaultGoal } = obstacleData;
+  const { bounds, start, target, approachOffset, targetRadius } = obstacleData;
+
+  // The planner aims at a point ABOVE the target (goal_above in the source),
+  // never the target itself; the target body is an obstacle to keep clear of.
+  const approachPoint: Point = { x: target.x, y: target.y - approachOffset };
+  const targetBody: Obstacle = { x: target.x, y: target.y, r: targetRadius };
+
   const [obstacles, setObstacles] = useState<Obstacle[]>([
     ...obstacleData.obstacles,
   ]);
@@ -98,14 +130,13 @@ export function RRTVisualizer() {
     { x: start.x, y: start.y, parentIdx: null, cost: 0 },
   ]);
   const [goalPath, setGoalPath] = useState<number[]>([]);
+  const [smoothPath, setSmoothPath] = useState<Point[]>([]);
   const [running, setRunning] = useState(false);
   const [iterations, setIterations] = useState(0);
   const [placing, setPlacing] = useState(false);
-  const [goalPos] = useState<Point>(defaultGoal);
 
   const treeRef = useRef(tree);
   const runningRef = useRef(running);
-  const iterRef = useRef(iterations);
 
   useEffect(() => {
     treeRef.current = tree;
@@ -113,21 +144,21 @@ export function RRTVisualizer() {
   useEffect(() => {
     runningRef.current = running;
   }, [running]);
-  useEffect(() => {
-    iterRef.current = iterations;
-  }, [iterations]);
 
   const step = useCallback(() => {
     if (!runningRef.current) return;
 
+    // Collision set: world obstacles plus the target body (so the tree avoids
+    // the drone itself and is forced to come in from above it).
+    const collisionObs = [...obstacles, targetBody];
     const currentTree = [...treeRef.current];
     let foundGoal = false;
 
     for (let n = 0; n < NODES_PER_FRAME; n++) {
-      // Bias toward goal 10% of the time
+      // Sample, biased toward the approach point above the target.
       const sample: Point =
-        Math.random() < 0.1
-          ? goalPos
+        Math.random() < GOAL_BIAS
+          ? approachPoint
           : {
               x: Math.random() * bounds.width,
               y: Math.random() * bounds.height,
@@ -137,9 +168,9 @@ export function RRTVisualizer() {
       const nearest = currentTree[nearIdx];
       const newPoint = steer(nearest, sample, STEP_SIZE);
 
-      if (!isCollisionFree(nearest, newPoint, obstacles)) continue;
+      if (!isCollisionFree(nearest, newPoint, collisionObs)) continue;
 
-      // Find nearby nodes for rewiring
+      // Choose-parent: lowest-cost collision-free connection within radius.
       let bestParent = nearIdx;
       let bestCost = nearest.cost + distance(nearest, newPoint);
 
@@ -150,7 +181,7 @@ export function RRTVisualizer() {
           const potentialCost = currentTree[i].cost + d;
           if (
             potentialCost < bestCost &&
-            isCollisionFree(currentTree[i], newPoint, obstacles)
+            isCollisionFree(currentTree[i], newPoint, collisionObs)
           ) {
             bestParent = i;
             bestCost = potentialCost;
@@ -166,21 +197,21 @@ export function RRTVisualizer() {
         cost: bestCost,
       });
 
-      // Rewire existing nodes
+      // Rewire neighbors through the new node where it lowers their cost.
       for (let i = 0; i < currentTree.length - 1; i++) {
         const d = distance(currentTree[i], newPoint);
         if (d < REWIRE_RADIUS) {
           const potentialCost = bestCost + d;
           if (
             potentialCost < currentTree[i].cost &&
-            isCollisionFree(newPoint, currentTree[i], obstacles)
+            isCollisionFree(newPoint, currentTree[i], collisionObs)
           ) {
             currentTree[i] = { ...currentTree[i], parentIdx: newIdx, cost: potentialCost };
           }
         }
       }
 
-      if (distance(newPoint, goalPos) < GOAL_RADIUS) {
+      if (distance(newPoint, approachPoint) < GOAL_RADIUS) {
         foundGoal = true;
       }
     }
@@ -190,25 +221,39 @@ export function RRTVisualizer() {
     setIterations((prev) => prev + NODES_PER_FRAME);
 
     if (foundGoal) {
-      // Find the node closest to goal
+      // Lowest-cost node inside the approach ball.
       let bestGoalIdx = 0;
-      let bestGoalDist = Infinity;
+      let bestGoalCost = Infinity;
       for (let i = 0; i < currentTree.length; i++) {
-        const d = distance(currentTree[i], goalPos);
-        if (d < GOAL_RADIUS && d < bestGoalDist) {
-          bestGoalDist = d;
+        const d = distance(currentTree[i], approachPoint);
+        if (d < GOAL_RADIUS && currentTree[i].cost < bestGoalCost) {
+          bestGoalCost = currentTree[i].cost;
           bestGoalIdx = i;
         }
       }
-      setGoalPath(tracePath(currentTree, bestGoalIdx));
+      const idxPath = tracePath(currentTree, bestGoalIdx);
+
+      // isPathValid: accept only if the final state is above the target.
+      const lastNode = currentTree[bestGoalIdx];
+      if (lastNode.y < target.y) {
+        setGoalPath(idxPath);
+        // Append the actual target, then cubic-Bézier smooth the result —
+        // the smoothed curve dives onto the target from the approach point.
+        const pathPts: Point[] = idxPath.map((i) => ({
+          x: currentTree[i].x,
+          y: currentTree[i].y,
+        }));
+        pathPts.push({ x: target.x, y: target.y });
+        setSmoothPath(smoothWithBezier(pathPts));
+      }
     }
 
-    if (currentTree.length < 1200) {
+    if (currentTree.length < MAX_NODES) {
       requestAnimationFrame(step);
     } else {
       setRunning(false);
     }
-  }, [obstacles, goalPos, bounds]);
+  }, [obstacles, approachPoint, targetBody, target, bounds]);
 
   const handleRun = useCallback(() => {
     setRunning(true);
@@ -221,6 +266,7 @@ export function RRTVisualizer() {
     runningRef.current = false;
     setTree([{ x: start.x, y: start.y, parentIdx: null, cost: 0 }]);
     setGoalPath([]);
+    setSmoothPath([]);
     setIterations(0);
   }, [start]);
 
@@ -231,13 +277,18 @@ export function RRTVisualizer() {
       const rect = svg.getBoundingClientRect();
       const scaleX = bounds.width / rect.width;
       const scaleY = bounds.height / rect.height;
-      const x = (e.clientX - rect.left) * scaleX - 25;
-      const y = (e.clientY - rect.top) * scaleY - 25;
-      setObstacles((prev) => [...prev, { x, y, width: 50, height: 50 }]);
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      setObstacles((prev) => [...prev, { x, y, r: 45 }]);
       handleReset();
     },
     [placing, running, bounds, handleReset]
   );
+
+  const smoothD =
+    smoothPath.length > 1
+      ? "M " + smoothPath.map((p) => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" L ")
+      : "";
 
   return (
     <div
@@ -270,7 +321,7 @@ export function RRTVisualizer() {
             letterSpacing: "0.1em",
           }}
         >
-          RRT* Path Planning
+          RRT* + Bézier · capture from above
         </div>
         <div
           style={{
@@ -295,18 +346,16 @@ export function RRTVisualizer() {
         }}
         onClick={handleSvgClick}
       >
-        {/* Obstacles */}
+        {/* Spherical obstacles */}
         {obstacles.map((obs, i) => (
-          <rect
+          <circle
             key={i}
-            x={obs.x}
-            y={obs.y}
-            width={obs.width}
-            height={obs.height}
+            cx={obs.x}
+            cy={obs.y}
+            r={obs.r}
             fill="var(--color-border-bright)"
             stroke="var(--color-border)"
             strokeWidth={1}
-            rx={3}
           />
         ))}
 
@@ -327,7 +376,7 @@ export function RRTVisualizer() {
             )
         )}
 
-        {/* Goal path */}
+        {/* Raw RRT* solution (pre-smoothing) */}
         {goalPath.length > 1 &&
           goalPath.slice(1).map((idx, i) => (
             <line
@@ -336,11 +385,24 @@ export function RRTVisualizer() {
               y1={tree[goalPath[i]].y}
               x2={tree[idx].x}
               y2={tree[idx].y}
-              stroke="var(--color-accent)"
-              strokeWidth={3}
-              strokeLinecap="round"
+              stroke="var(--color-text-muted)"
+              strokeWidth={1.5}
+              strokeDasharray="5,5"
+              opacity={0.7}
             />
           ))}
+
+        {/* Smoothed (executed) Bézier trajectory */}
+        {smoothD && (
+          <path
+            d={smoothD}
+            fill="none"
+            stroke="var(--color-accent)"
+            strokeWidth={3}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
 
         {/* Start */}
         <circle
@@ -363,32 +425,61 @@ export function RRTVisualizer() {
           START
         </text>
 
-        {/* Goal */}
+        {/* Approach point above the target (the planner's actual goal) */}
         <circle
-          cx={goalPos.x}
-          cy={goalPos.y}
+          cx={approachPoint.x}
+          cy={approachPoint.y}
           r={GOAL_RADIUS}
           fill="none"
           stroke="var(--color-accent)"
           strokeWidth={2}
           strokeDasharray="4,4"
         />
-        <circle
-          cx={goalPos.x}
-          cy={goalPos.y}
-          r={6}
-          fill="var(--color-accent)"
-        />
         <text
-          x={goalPos.x}
-          y={goalPos.y - GOAL_RADIUS - 6}
+          x={approachPoint.x}
+          y={approachPoint.y - GOAL_RADIUS - 6}
           textAnchor="middle"
           fill="var(--color-accent)"
           fontSize={11}
           fontFamily="var(--font-mono)"
           fontWeight={600}
         >
-          GOAL
+          APPROACH
+        </text>
+
+        {/* Vertical guide from approach point down onto the target */}
+        <line
+          x1={approachPoint.x}
+          y1={approachPoint.y}
+          x2={target.x}
+          y2={target.y}
+          stroke="var(--color-accent)"
+          strokeWidth={1}
+          strokeDasharray="2,4"
+          opacity={0.5}
+        />
+
+        {/* Target drone (obstacle body — approached from above) */}
+        <circle
+          cx={target.x}
+          cy={target.y}
+          r={targetRadius}
+          fill="var(--color-accent)"
+          opacity={0.25}
+          stroke="var(--color-accent)"
+          strokeWidth={1.5}
+        />
+        <circle cx={target.x} cy={target.y} r={5} fill="var(--color-accent)" />
+        <text
+          x={target.x}
+          y={target.y + targetRadius + 16}
+          textAnchor="middle"
+          fill="var(--color-accent)"
+          fontSize={11}
+          fontFamily="var(--font-mono)"
+          fontWeight={600}
+        >
+          TARGET
         </text>
       </svg>
 
@@ -455,7 +546,7 @@ export function RRTVisualizer() {
         >
           {placing ? "Done placing" : "Add obstacles"}
         </button>
-        {goalPath.length > 1 && (
+        {smoothPath.length > 1 && (
           <span
             style={{
               fontFamily: "var(--font-mono)",
@@ -464,7 +555,7 @@ export function RRTVisualizer() {
               marginLeft: "auto",
             }}
           >
-            ✓ Path found ({goalPath.length} nodes)
+            ✓ Path found · Bézier-smoothed, approaching from above
           </span>
         )}
       </div>
