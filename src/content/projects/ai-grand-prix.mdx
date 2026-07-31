@@ -1,9 +1,9 @@
 ---
-title: "AI Grand Prix — Autonomous Drone Racing"
-summary: "Guidance and control software for an AI-piloted racing drone competing in the Anduril-backed AI Grand Prix: a spline path planner, an SE(3) geometric tracking controller, and a manual radio-control path, all driving the drone over MAVLink."
+title: "AI Grand Prix — Vision-Only Autonomous Drone Racing"
+summary: "Flight software for the Anduril-backed AI Grand Prix Round-2 qualifier: a racing quadrotor flies a 17-gate course fully autonomously with no GPS, no pose telemetry, and no gate coordinates — recovering attitude, velocity, and position from a raw IMU and a single camera. Currently 6th out of thousands of entrants."
 status: "Active"
 domain: "Aerial Autonomy"
-tier: standard
+tier: featured
 featured: true
 order: 4
 date_range: "May 2026 – Present"
@@ -11,37 +11,84 @@ thumbnail: "/images/ai-grand-prix/AI_of_Sauron_Q1_720p.mp4"
 tags:
   - autonomy
   - drone racing
+  - computer vision
+  - state estimation
+  - Kalman filtering
   - guidance & control
   - MAVLink
-  - path planning
-  - flight control
 metrics:
-  - label: "Cruise"
-    value: "13 m/s"
-  - label: "Controller"
-    value: "SE(3) Geometric"
-  - label: "Prize Pool"
-    value: "$500K"
+  - label: "Standing"
+    value: "6th of Thousands"
+  - label: "Best Lap"
+    value: "19.78 s"
+  - label: "Sensing"
+    value: "Vision-Only"
 ---
+import ResultProof from '../../components/ResultProof.astro';
 
 ## The Competition
 
-The [AI Grand Prix](https://www.theaigrandprix.com/) is an autonomous drone racing competition conceived by Anduril founder Palmer Luckey in partnership with the Drone Champions League, Neros Technologies, and JobsOhio. Teams write autonomy software that pilots high-speed racing drones through professional courses with **zero human intervention** — using only onboard sensing, with no GPS or absolute position data. All teams fly identical Neros-built racing drones for complete competitive parity, competing for a share of a $500,000 prize pool and engineering roles at Anduril. The roadmap runs through virtual qualifiers into a physical qualifier in Southern California (September 2026) and the live finals in Ohio (November 2026).
+The [AI Grand Prix](https://www.theaigrandprix.com/) is an autonomous drone racing competition conceived by Anduril founder Palmer Luckey, in partnership with the Drone Champions League, Neros Technologies, and JobsOhio. Teams write autonomy software that pilots racing drones through professional courses with **zero human intervention**, competing for a share of a **$500,000** prize pool and engineering roles at Anduril.
 
-## Current State of the Software
+<ResultProof metrics={[
+  { metric: "6th of Thousands", context: "Current standing among all entrants" },
+  { metric: "19.78 s", context: "Best counted time on the 17-gate, ~272 m course" },
+  { metric: "17/17 Gates, Zero Collisions", context: "First full-course completion — 22 July 2026" },
+  { metric: "~0.8 m Position RMS", context: "Estimator accuracy vs. ground truth over 253 m of flight" }
+]} />
 
-Our team flies against the official AI-GP simulator from a Python control client that talks to the drone over MAVLink (`pymavlink`) on a UDP link. The system as it stands:
+## The Round-2 Problem
 
-**Race setup and start.** On launch, the client repeatedly resets the simulator and validates the returned track frame — re-resetting until the first gate sits a sane distance from the spawn point, which guards against corrupted NED origins that would otherwise place gates kilometres away. Once a clean frame is captured it builds the path, arms, and flies the loop until the race-finish flag is reported, logging state throughout for post-run plotting.
+Round 2 strips away every absolute reference. What the simulator will still tell you, and what it won't:
 
-**Path planning.** `PathPlanner` fits a smooth cubic Hermite spline through the race gates. Each gate's orientation quaternion sets the fly-through tangent at that knot, the waypoint is lifted to the centre of the 1.5 m gate opening, and the path is extended past the final gate so the drone carries momentum through the finish instead of stalling on it. The spline is reparameterized by arc length, exposing progress-based queries for the desired position, velocity, and a centripetal-curvature acceleration feed-forward, plus closest-point and look-ahead lookups.
+- **Available:** a raw IMU (body-frame specific force and body rates, ~80 Hz), a 640×360 onboard camera at ~30 Hz, collision events, and a race-status gate counter.
+- **Disabled:** GPS, attitude, position, odometry — those fields come back null — **and the gate coordinates themselves.**
+- **Control surface:** body rates plus collective throttle. The actuator and position/velocity setpoint paths are dead.
 
-**Flight control.** The active autonomous mode is an SE(3) geometric tracking controller, adapted to the simulator's body-rate command interface. Each cycle it pulls the progress-based spline target, runs a translational PD law (with the curvature feed-forward) to a commanded world acceleration, decomposes that into yaw-aware roll/pitch setpoints, converts attitude error into a body-rate command with a non-singular yaw law that looks ahead along the spline for stable heading capture, and computes a tilt-compensated collective throttle from an empirically calibrated thrust map. A `drone_params.json` calibration file captures the throttle map and per-axis rate signs and gains so the same controller transfers cleanly across vehicle tuning.
+So the stack has to recover attitude, velocity, and position from IMU and vision alone, then fly a geometric controller through gate openings **1.5 m square**. Three subsystems carry that: a gate detector, a 15-state error-state Kalman filter, and an SE(3) tracking controller.
 
-**Manual control.** Alongside the autonomy, the client supports direct human flight from a physical EdgeTX/RadioMaster radio plugged in as a USB joystick, as well as a keyboard fallback — used to characterise the vehicle dynamics and the simulator interface before trusting the closed-loop controller.
+## Gate Detection
 
-## My Contributions
+The only source of gate localization — each camera frame becomes range, bearing, and where resolvable a full 6-DOF gate pose, each tagged with explicit trust flags telling the estimator which parts to believe.
 
-- **Proposed the geometric tracking controller** as the team's autonomous control approach — the SE(3) spline-tracking law described above, which is the controller the team flies.
-- **Built the manual radio-control path.** I wrote the `EdgeTXController` module that reads an EdgeTX/RadioMaster radio as a USB HID joystick (via `pygame`), applies a center deadzone, and normalizes the four sticks into roll/pitch/yaw body rates plus collective thrust, with a configurable AETR axis map and sign-inversion flags for any radio. I wired it into the main controller to stream `set_attitude_target` commands, with a failsafe that snaps and holds the current position if the radio is unplugged or drops mid-flight.
-- **Tuned the controller.** I tuned the geometric tracking controller's gains — re-balancing the position and velocity gains, raising the cruise speed, extending the yaw look-ahead horizon, relaxing the tilt clamp for more aggressive racing attitudes, and adjusting the curvature feed-forward and control-loop rate for smooth, fast, stable tracking through the course.
+- **Segmentation is brightness-invariant.** Gate markers pulse, so absolute HSV floors produce an unstable blob frame to frame. The shipped mask keys on **red dominance** — `R − max(G,B) ≥ 30` and `R ≥ 45` — closed with a 5×5 morphological kernel to bridge the blue targeting beam that otherwise severs the ring into a C-arc.
+- **Non-gate red is rejected structurally, not by hue.** A real gate is a hollow, near-square ring; the ceiling arrows and the "AI-GP" banner are solid. A blob is dropped only when it is both solid *and* wide.
+- **Pose recovery cascades by range.** A fully-visible ring solves through `SOLVEPNP_IPPE_SQUARE` against the 2.72 m outer border for full 6-DOF pose. As the gate clips the frame, the pipeline degrades deliberately — to the 1.5 m inner opening, then to a geometric construction from visible free edges, then to a bearing-only centroid — with each regime declaring its own trust level.
+- **Range is only trusted when it's earned.** Measured blob edges floor at **~16.3 px** (glow halo, minimum line width, JPEG bleed), so beyond ~50 m every gate back-projects to the same ~44–53 m. Trust is therefore tested on *measured pixel size*, never the derived range, under one continuous law: `σ_range/range = σ_px/(edge_px − floor)` — **9% at 23 m, 83% at 47 m**, diverging at the floor.
+- **Bearing has no such floor**, so a range-floored far gate still contributes an accurate bearing. That asymmetry is what lets the near gate anchor the along-track axis while far gates resect heading — and the handover happens automatically as gates approach.
+- **Classical beat learned.** Zero-shot ML detectors (YOLO-World) produced no detections against the simulator's stylized aesthetic; classical thresholding is the shipped backend.
+- **Bounded compute.** Blobs are processed largest-first under a 25 ms wall-clock budget, so a many-gate frame can't starve the receive and control threads. Truncation only ever drops the far tail.
+
+## State Estimation
+
+A 15-state error-state Kalman filter in the Solà (2017) formulation — nominal state `[p, v, q, a_b, ω_b]`, error state `[δp, δv, δθ, δa_b, δω_b]` with a body-frame attitude error.
+
+- **The accelerometer is an input, not a measurement.** There is deliberately no thrust model, no hand-scheduled trust modulation, and no hand-gained residual feedback anywhere in the filter. The only state that can absorb a specific-force error is the accel bias, and it moves solely through a covariance-weighted Kalman gain bounded by its own process noise.
+- **Exact Jacobians.** The covariance transition matrix is the true first-order Jacobian of the propagator — including the right-Jacobian factor the textbook form omits — proven against a numerical Jacobian in the test suite.
+- **Four measurement types**, each with a closed-form Jacobian and χ²-gated innovation: body-frame landmark position against a frozen 17-gate map, gate-plane normal as the attitude anchor, a **rotor-drag** pseudo-measurement (Faessler 2018) that makes velocity observable with no vision at all, and a yaw pseudo-measurement. A pre-arm at-rest routine (ZUPT, gravity levelling, gyro bias) initializes the filter on the 17.8° launch ramp.
+- **Reject, never force-fit.** Corrections use the Joseph form with Solà's post-injection reset. Gating is two-tier: beyond the 99.9% χ² quantile is a hard reject, while 95–99.9% inflates the measurement noise so a marginal fix is admitted only up to its validated magnitude. The state correction is never clamped — that would desynchronize the covariance from the state.
+- **Camera latency is handled by rewinding, not approximating.** Vision fixes are stamped at frame capture and arrive after the filter has integrated past that epoch. A ~1.2 s ring of state snapshots lets the filter restore the nearest snapshot, apply the update *there*, and re-propagate the buffered IMU forward (the Lynen 2013 / `ethzasl_msf` pattern) — exact, at roughly four propagate steps.
+- **Noise is measured, not tuned.** Each sighting's covariance is built from calibrated residual laws on the axes the detector actually errs along — including an attitude-rate-coupled centre wander treated as a *colored* process so a white-noise filter can't double-count it, and an independent misorientation witness: a bolted-down gate can't rotate 50° in 0.1 s, so the angle between the solved and mapped normal measures this frame's pose error directly.
+
+## Control
+
+A cascaded SE(3) geometric tracking controller in the Lee et al. (2010) lineage, ported from the Round-1 client.
+
+- **Reference.** An arc-length-reparameterised cubic Hermite spline through the gate opening centres is the sole reference path.
+- **Speed governor.** A progress variable marches along the spline at `min(flat cap, curvature cap √(g·tanθ/κ), descent cap)`, previewed and rate-limited.
+- **Cascade.** Translational PD produces a world acceleration command, decomposed yaw-aware into roll/pitch setpoints under a tilt clamp; an attitude-P loop with feed-forward emits body rates.
+- **Plant inversion.** Body rates are pushed through the exact inverse of the *measured* plant — a nonlinear rate gain, mount rotation, and sign chain mirrored precisely against the estimator's sensor mapping so sensing and command remain true inverses. Throttle is tilt-compensated through a calibrated affine thrust map.
+
+## Verification
+
+Flight accuracy is scored **only** against an independent ground-truth observer running as a separate read-only process — never against the estimator's own state.
+
+- **Offline CI gate.** Two suites (`test_paper_stack.py`, `test_eskf15.py`) plus roughly 60 standalone tests, covering numeric-vs-analytic Jacobians, covariance symmetry and positive-definiteness, reset behaviour, reduction to known cases, and NIS/NEES consistency on synthetic data.
+- **Per-run consistency reporting.** Channel-by-channel NIS statistics accumulate every run — mean ≈ degrees of freedom, ~5% beyond the 95% gate for a consistent filter.
+- **Batch A/B harness.** Arm-tagged batches run from spec files with venue-health tripwires; findings accumulate as a version-controlled experiment corpus alongside the code.
+
+## Results
+
+- **First full-course completion** with all 17 gates registered and zero collisions: **22 July 2026**, pure vision.
+- **Counted record: 19.78 s**, reached by successive tuning of the speed governor, corner authority, and per-gate aim, with the full config ladder recorded in the repo.
+- **Estimator accuracy: ~0.8 m position RMS** against ground truth over 253 m of flight.

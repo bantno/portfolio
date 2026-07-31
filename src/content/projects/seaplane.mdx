@@ -17,19 +17,18 @@ tags:
   - aerodynamics
   - flight testing
 metrics:
-  - label: "AUW"
+  - label: "Prototype AUW"
     value: "3.75 kg"
   - label: "Cruise"
-    value: "150 W @ 17 m/s"
+    value: "150 W @ 18 m/s"
   - label: "Solar Gain"
     value: "+21.9%"
 conference: "AIAA AVIATION 2024"
 ---
-import { MDPDemo } from '../../components/react/MDPDemo';
-import { FlightTrajectory } from '../../components/react/FlightTrajectory';
 import Figure from '../../components/Figure.astro';
 import Video from '../../components/Video.astro';
-import flightPath from '../../data/flight-path.json';
+
+<Video src="/images/seaplane/AHAB_Takeoff.mp4" caption="AHAB taking off during Phase 1 flight testing." />
 
 AHAB (Aquatic High-endurance Aerial Biomonitor) is a solar-powered seaplane UAV designed for persistent marine mammal monitoring over remote ocean regions. The project spans conceptual vehicle design with a novel wing-rotation mechanism, an MDP-based flight planning framework that outperforms heuristic approaches, and a phased prototype flight test campaign.
 
@@ -39,7 +38,14 @@ AHAB (Aquatic High-endurance Aerial Biomonitor) is a solar-powered seaplane UAV 
 
 ## The Problem
 
-Cetacean species — whales, dolphins, and porpoises — are experiencing sustained population declines worldwide, and marine biologists need better tools to study and protect them. Current monitoring platforms each have critical limitations: ship-based surveys are expensive and weather-dependent, fixed-wing UAVs like ScanEagle require manual launch and recovery with limited range, surface vehicles like SailDrone are too slow for focal-animal tracking, and passive acoustic buoys cannot be repositioned. A solar-powered seaplane fills this gap by combining persistent deployment through water landings and solar recharging, sufficient airspeed for focal monitoring, autonomous operation that eliminates ship-based recovery costs, and dual-modality sensing — visual survey while airborne, acoustic monitoring via hydrophone while floating.
+Cetacean populations are declining worldwide, and every existing monitoring platform gives something up:
+
+- **Ship-based surveys** — expensive and weather-dependent.
+- **Fixed-wing UAVs** (ScanEagle-class) — manual launch and recovery, limited range.
+- **Surface vehicles** (SailDrone-class) — too slow for focal-animal tracking.
+- **Passive acoustic buoys** — cannot be repositioned.
+
+A solar-powered seaplane closes that gap on four fronts: persistent deployment via water landings and solar recharging, enough airspeed for focal monitoring, autonomous operation that removes ship-based recovery costs, and dual-modality sensing — visual survey while airborne, hydrophone acoustics while floating.
 
 </section>
 
@@ -49,11 +55,14 @@ Cetacean species — whales, dolphins, and porpoises — are experiencing sustai
 
 ## Conceptual Design
 
-The seaplane's design integrates aerodynamic performance, hydrostatic stability, and solar energy harvesting into a single airframe. A **flying hull** configuration was selected over floatplane and amphibious alternatives for its reduced structural weight and better takeoff performance in rough seas. The design process iterates through geometry definition, mass estimation, parasitic drag analysis in OpenVSP (C_D₀ ≈ 0.031), endurance calculation, and hydrostatic stability checks — tuning beam, deadrise angle, and forebody/step/sternpost proportions — until all requirements are met.
+The airframe has to satisfy aerodynamic performance, hydrostatic stability, and solar harvesting at once. A **flying hull** configuration won over floatplane and amphibious alternatives on structural weight and rough-sea takeoff performance.
 
-Because the vehicle must rest and recharge on the open ocean, the hull cross-section is sized for roll stability while floating: placing the center of gravity above the center of buoyancy at the design waterline yields a positive metacentric height so the hull self-rights across the expected range of heel angles.
-
-A custom spanwise **wing-rotation mechanism** lets the moored vehicle tilt its solar panels toward the sun during the recharge phase, and the same actuators and mechanical lock perform self-righting from an inverted attitude — no additional hardware. Over a simulated week in late June at 25°N, the articulated wing collects **+203 Wh** net over a fixed-wing baseline, a **21.9% energy gain** that widens the latitude and seasonal envelope over which the vehicle can close its daily energy budget. Solar modeling with pvlib and Ascent Solar CIGS thin-film parameters shows the vehicle can sustain 1.3 hours of flight per day in January and 2.3 hours in June at the target latitude — meeting the requirement of at least one flight-hour per day year-round.
+- **Design point.** The full-payload vehicle is sized to a **5.0 kg** all-up design target, cruising on a **150 W at 18 m/s** power budget set by the VSPAERO model and validated across flight tests.
+- **Design loop.** Geometry definition → mass estimation → parasitic drag in OpenVSP (**C_D₀ ≈ 0.031**) → endurance calculation → hydrostatic stability check, tuning beam, deadrise angle, and forebody/step/sternpost proportions until every requirement closes.
+- **Floating roll stability.** The hull cross-section places the center of gravity above the center of buoyancy at the design waterline, giving a positive metacentric height so the hull self-rights across the expected heel range.
+- **Wing-rotation mechanism.** A custom spanwise mechanism tilts the solar panels toward the sun while moored — and the same actuators and mechanical lock perform self-righting from inverted, with no added hardware. Both functions have since been demonstrated on the water (see Phase 3).
+- **Measured payoff.** Over a simulated week in late June at 25°N, the articulated wing collects **+203 Wh** net over a fixed-wing baseline — a **21.9% energy gain** that widens the latitude and seasonal envelope for closing the daily energy budget.
+- **Solar modeling.** pvlib with Ascent Solar CIGS thin-film parameters projects **1.3 flight-hours/day in January** and **2.3 in June** at the target latitude, clearing the requirement of at least one flight-hour per day year-round.
 
 </section>
 
@@ -63,15 +72,14 @@ A custom spanwise **wing-rotation mechanism** lets the moored vehicle tilt its s
 
 ## Optimal Flight Planning
 
-A solar-powered seaplane must decide when to fly, when to rest on the water and recharge, and how to balance observation time against the risk of battery exhaustion or crash. Weather is stochastic — solar irradiance and wind speed vary unpredictably — so simple threshold rules ("fly when battery is above X, land when below Y") are intuitive but leave performance on the table.
+The vehicle must continually decide when to fly, when to rest and recharge, and how to weigh observation time against battery exhaustion or loss. Weather is stochastic, so intuitive threshold rules ("fly above X, land below Y") leave real performance on the table.
 
-I formulated this as a **Markov Decision Process** and solved it via stochastic dynamic programming (Bellman recursion). The state captures battery state-of-charge and operating mode (floating, flying, or failed); at each stage the optimal policy selects from takeoff, cruise, land, or save-energy based on current conditions. The simulation is driven by stochastic weather models fit to ERA5 reanalysis data — solar irradiance as a Beta-distributed clearness index and wind speed as a Weibull distribution — at five candidate deployment sites spanning 20°N to 58°N. The value function is computed offline and stored onboard for real-time decision-making.
-
-The interactive demo below lets you design a threshold rule and race it against the optimal policy. The key insight: the MDP makes non-obvious decisions — like resting through a sunny period to bank energy for a risky overnight segment — that no fixed threshold can replicate.
-
-<MDPDemo client:visible />
-
-Monte Carlo studies across battery capacities, failure penalties, geographic locations, and seasons show the optimal policy consistently outperforms every threshold parameter combination — more whale sightings and lower failure rates — and adapts automatically without the location-specific tuning a threshold controller needs. A practical design takeaway: the energy-optimal battery capacity is **mission-location dependent**, so battery sizing should follow the intended operating environment.
+- **Formulation.** Modeled as a **Markov Decision Process** solved by stochastic dynamic programming (Bellman recursion). State captures battery state-of-charge and operating mode — floating, flying, or failed; each stage selects takeoff, cruise, land, or save-energy.
+- **Weather models.** Driven by stochastic models fit to ERA5 reanalysis — solar irradiance as a Beta-distributed clearness index, wind speed as a Weibull distribution — across five candidate deployment sites spanning **20°N to 58°N**.
+- **Deployment.** The value function is computed offline and stored onboard for real-time decision-making.
+- **Why it beats thresholds.** The optimal policy makes non-obvious calls a fixed threshold cannot reproduce — such as resting through a sunny period to bank energy for a risky overnight segment.
+- **Monte Carlo results.** Across battery capacities, failure penalties, locations, and seasons, the optimal policy outperforms *every* threshold parameter combination — more whale sightings, lower failure rates — and adapts without location-specific tuning.
+- **Design takeaway.** Energy-optimal battery capacity is **mission-location dependent**, so battery sizing should follow the intended operating environment.
 
 </section>
 
@@ -81,27 +89,42 @@ Monte Carlo studies across battery capacities, failure penalties, geographic loc
 
 ## Prototype: AHAB
 
-AHAB is a proof-of-concept prototype built to demonstrate that the airframe can execute the missions the MDP framework plans. Development follows a phased flight test approach: aerodynamic validation, hydrostatic and hydrodynamic validation, subsystem integration, and full mission demonstration. The airframe is 3D-printed in LW-ASA, reinforced with carbon-fiber spars and fiberglass, and waterproofed with marine-grade sealant and electronics potting. Modifications from the conceptual design include a V-tail for easier construction and sponsons for improved hydrostatic stability.
+AHAB is a proof-of-concept built to show the airframe can fly the missions the MDP framework plans, developed through a phased flight test campaign.
+
+- **Construction.** 3D-printed in LW-ASA, reinforced with carbon-fiber spars and fiberglass, waterproofed with marine-grade sealant and potted electronics.
+- **Changes from the conceptual design.** A V-tail for easier construction, and sponsons for improved hydrostatic stability.
 
 <Figure src="/images/seaplane/Preflight.jpg" alt="AHAB prototype during pre-flight inspection" caption="AHAB during pre-flight inspection." number={1} wide={true} />
 
 ### Phase 1: Aerodynamic Validation
 
-Phase 1 confirmed the airframe is flightworthy. AHAB flew with minimal trim corrections, significant excess thrust, and excess control authority in cruise. Measured performance: 3.75 kg all-up weight, ~150 W cruise power at 17 m/s and 35% throttle, a glide ratio of 6.5, and a 4–5 second takeoff run.
+Phase 1 confirmed the airframe is flightworthy — minimal trim corrections, significant excess thrust, and excess control authority in cruise.
 
-<FlightTrajectory client:visible waypoints={flightPath} />
+- **All-up weight, as flown:** 3.75 kg — the Phase 1 prototype, against the 5.0 kg full-payload design target
+- **Cruise power:** ~150 W at 18 m/s and 35% throttle
+- **Glide ratio:** 6.5
+- **Takeoff run:** 4–5 seconds
 
 <Video src="/images/seaplane/Takeoff.mov" caption="Phase 1 maiden flight takeoff." number={2} />
 
 ### Phase 2: Hydrostatic & Hydrodynamic Validation
 
-Phase 2 validates water operations. The second prototype is fully waterproofed and hydrostatically stable. Waterproofing tests and low-speed taxi runs are complete; remaining evaluation includes hump speed, planing behavior, step ventilation, and water takeoff.
+Phase 2 validates water operations. The second prototype is fully waterproofed and hydrostatically stable; waterproofing tests and low-speed taxi runs are complete. Remaining evaluation covers hump speed, planing behavior, step ventilation, and water takeoff.
 
-<Video src="/images/seaplane/Low Speed Taxi Side View.mov" caption="Low-speed water taxi test." number={3} />
+### Phase 3: Wing Rotation — Solar Tracking & Self-Righting
 
-### Future Phases
+Phase 3 puts the wing-rotation mechanism to work on the water. Both of its functions have now been demonstrated on the floating vehicle:
 
-Phase 3 integrates the wing-rotation mechanism, self-righting controller, solar-recharge system, and hydrophone winch. Phase 4 executes a complete mission cycle — takeoff, survey, landing, recharge — to validate the full concept of operations.
+- **Floating solar tracking.** The moored vehicle rotates its wing spanwise to aim the panels at the sun — the mechanism behind the **+203 Wh** weekly gain (**21.9%**) predicted in the conceptual design.
+- **Self-righting.** The same actuators and mechanical lock recover the vehicle from an inverted attitude, with no additional hardware.
+
+<Figure src="/images/seaplane/AHAB-before-floating-solar-tracking-test.jpg" alt="AHAB floating on the water ahead of a solar-tracking test" caption="AHAB on the water ahead of a floating solar-tracking test — the wing-rotation mechanism tilts the panels toward the sun while moored." number={3} wide={true} />
+
+Remaining Phase 3 integration covers the solar-recharge system and the hydrophone winch.
+
+### Phase 4
+
+Execute a full mission cycle — takeoff, survey, landing, recharge — to validate the concept of operations end to end.
 
 </section>
 

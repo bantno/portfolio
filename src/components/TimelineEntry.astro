@@ -9,6 +9,8 @@ interface Props {
 }
 
 const { title, org, dateRange, description, track, projectLink } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <div class:list={["timeline-entry", track]}>
@@ -19,7 +21,7 @@ const { title, org, dateRange, description, track, projectLink } = Astro.props;
     <div class="entry-org">{org}</div>
     <div class="entry-desc">{description}</div>
     {projectLink && (
-      <a href={projectLink} class="entry-link">See full project →</a>
+      <a href={`${base}${projectLink}`} class="entry-link">See full project →</a>
     )}
   </div>
 </div>

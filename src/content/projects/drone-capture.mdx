@@ -25,7 +25,6 @@ metrics:
     value: "Custom Grasper"
 ---
 import { RRTVisualizer } from '../../components/react/RRTVisualizer';
-import { AnnotatedFigure } from '../../components/react/AnnotatedFigure';
 import Figure from '../../components/Figure.astro';
 import Video from '../../components/Video.astro';
 
@@ -37,39 +36,35 @@ Autonomously capture rogue drones in indoor, GPS-denied, densely populated envir
 
 ## Approach
 
-Designed and implemented an autonomy solution for an aerial interceptor drone. Architected a ROS2-based control stack: a Raspberry Pi companion computer running the high-level planning and state logic, and a Pixhawk flight controller running PX4 for low-level flight control. The two are bridged with micro-XRCE-DDS (the micro-ROS agent), so ROS2 nodes command PX4 directly through its offboard interface.
-
-Indoor positioning replaces GPS with a Vicon motion-capture feed fused into PX4's EKF2 estimator. The interceptor treats its target as a second vehicle — subscribing to the target's local position over a separate PX4 namespace — and plans a trajectory to intercept and capture it from above.
-
-Trajectory generation evolved in two stages. The first was a closed-form quadratic Bézier planner that curves up and over toward the target; the production planner is an OMPL RRT* search over the 3D workspace with spherical obstacle constraints, smoothed with a Bézier or B-spline fit and streamed to PX4 as a Bézier trajectory setpoint.
-
-Designed and 3D printed (PLA, NylonX) a mechanical grasping payload with spring-loaded jaws and servo-actuated release mechanism, capable of securing a target drone in flight.
+- **Control stack.** A ROS2 architecture splitting a Raspberry Pi companion computer (high-level planning and state logic) from a Pixhawk running PX4 (low-level flight control), bridged with micro-XRCE-DDS so ROS2 nodes command PX4 directly through its offboard interface.
+- **Indoor positioning.** A Vicon motion-capture feed fused into PX4's EKF2 estimator replaces GPS entirely.
+- **Target tracking.** The interceptor treats its target as a second vehicle, subscribing to the target's local position over a separate PX4 namespace, and plans a trajectory to intercept and capture it from above.
+- **Payload.** A 3D-printed (PLA, NylonX) mechanical grasper with spring-loaded jaws and a servo-actuated release, capable of securing a target drone in flight.
 
 ## Path Planning
 
-The production planner wraps OMPL's RRT*: it explores the configuration space by randomly sampling points, connecting each to the nearest existing node, and rewiring the tree whenever a shorter path is found. It plans over a bounded 3D workspace (±4 m per axis) against spherical obstacle constraints, with a goal-sampling bias of 0.1 and a 1.0 m extension step. Each solve runs under a fixed time budget (~0.45 s) so the tree can be regrown as the target moves, and a path-validity check enforces that the final approach comes from above the target. The resulting waypoints are smoothed with a Bézier or B-spline fit before being handed to PX4.
+The production planner wraps OMPL's **RRT\***: it samples the configuration space at random, connects each sample to its nearest node, and rewires the tree whenever a shorter path appears.
+
+- **Workspace:** a bounded 3D volume of ±4 m per axis, against spherical obstacle constraints.
+- **Search parameters:** goal-sampling bias of 0.1 and a 1.0 m extension step.
+- **Real-time budget:** each solve runs under a fixed ~0.45 s budget, so the tree can be regrown as the target moves.
+- **Approach constraint:** a path-validity check enforces that the final approach comes from above the target.
+- **Smoothing:** resulting waypoints get a Bézier or B-spline fit before being handed to PX4.
 
 <RRTVisualizer client:visible />
 
 ## Grasping Mechanism
 
-The mechanical grasper uses spring-loaded jaws that close on contact, with a servo-actuated release for controlled deployment. The NylonX construction provides impact resistance while keeping weight under the drone's payload budget.
-
-<AnnotatedFigure
-  client:visible
-  src="/images/drone-capture/placeholder-grasper.svg"
-  alt="Drone grasping mechanism"
-  hotspots={[
-    { x: 25, y: 30, label: "Spring-loaded jaws", description: "Passive closing mechanism — contact-triggered, no actuation delay" },
-    { x: 60, y: 45, label: "Servo release", description: "SG90 micro servo actuates the release pin for controlled jaw opening" },
-    { x: 45, y: 75, label: "Mounting interface", description: "Dovetail mount to drone frame — tool-free installation for field swaps" }
-  ]}
-/>
+The grasper uses spring-loaded jaws that close on contact, with a servo-actuated release for controlled deployment. NylonX construction provides impact resistance while keeping weight under the drone's payload budget.
 
 <Video src="/images/drone-capture/drone_capture_flight_with_basket.MP4" caption="Capture flight test with the grasping basket payload." />
 
 ## Iteration
 
-The trajectory stack started as a single closed-form quadratic Bézier curve — cheap to compute and smooth, but blind to obstacles and only viable in open space. Moving to OMPL RRT* added true obstacle avoidance and the approach-from-above constraint needed for a reliable capture, while the fixed per-solve time budget keeps planning fast enough to re-plan against a moving target. The Bézier/B-spline post-smoothing carried over from the original approach to keep the executed path flyable.
+**Trajectory stack.** Started as a single closed-form quadratic Bézier curve — cheap and smooth, but blind to obstacles and only viable in open space. Moving to OMPL RRT\* added true obstacle avoidance and the approach-from-above constraint needed for a reliable capture, while the fixed per-solve time budget keeps planning fast enough to re-plan against a moving target. The Bézier/B-spline post-smoothing carried over to keep the executed path flyable.
 
-The grasping mechanism went through three revisions. V1 used rigid jaws that transferred impact loads directly to the drone frame, causing attitude disturbances. V2 added a compliant wrist joint that absorbed impact energy. V3 — the final design — combined the compliant wrist with spring-loaded jaws, eliminating the need for an actuator to close the gripper and reducing weight by 40%.
+**Grasping mechanism.** Three revisions:
+
+- **V1** — rigid jaws transferred impact loads directly to the drone frame, causing attitude disturbances.
+- **V2** — added a compliant wrist joint that absorbed impact energy.
+- **V3** (final) — combined the compliant wrist with spring-loaded jaws, eliminating the actuator needed to close the gripper and **reducing weight by 40%**.

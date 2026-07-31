@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
 const navProjects = projects
-  .filter((p) => p.data.tier !== "brief")
+  .filter((p) => p.data.tier !== "brief" && !p.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
