@@ -1,6 +1,6 @@
 ---
 title: "AI Grand Prix — Vision-Only Autonomous Drone Racing"
-summary: "Flight software for the Anduril-backed AI Grand Prix Round-2 qualifier: a racing quadrotor flies a 17-gate course fully autonomously with no GPS, no pose telemetry, and no gate coordinates — recovering attitude, velocity, and position from a raw IMU and a single camera. Currently 6th out of thousands of entrants."
+summary: "Flight software for the Anduril-backed AI Grand Prix Round-2 qualifier: a racing quadrotor flies a 17-gate course fully autonomously with no GPS, no pose telemetry, and no gate coordinates — recovering attitude, velocity, and position from a raw IMU and a single camera. Placed 7th out of 3,000+ teams — advancing to the first round of hardware trials in Costa Mesa."
 status: "Active"
 domain: "Aerial Autonomy"
 tier: featured
@@ -18,21 +18,22 @@ tags:
   - MAVLink
 metrics:
   - label: "Standing"
-    value: "6th of Thousands"
+    value: "7th of 3,000+ Teams"
   - label: "Best Lap"
-    value: "19.78 s"
+    value: "17.56 s"
   - label: "Sensing"
     value: "Vision-Only"
 ---
 import ResultProof from '../../components/ResultProof.astro';
+import Video from '../../components/Video.astro';
 
 ## The Competition
 
 The [AI Grand Prix](https://www.theaigrandprix.com/) is an autonomous drone racing competition conceived by Anduril founder Palmer Luckey, in partnership with the Drone Champions League, Neros Technologies, and JobsOhio. Teams write autonomy software that pilots racing drones through professional courses with **zero human intervention**, competing for a share of a **$500,000** prize pool and engineering roles at Anduril.
 
 <ResultProof metrics={[
-  { metric: "6th of Thousands", context: "Current standing among all entrants" },
-  { metric: "19.78 s", context: "Best counted time on the 17-gate, ~272 m course" },
+  { metric: "7th of 3,000+ Teams", context: "Round-2 qualifier standing — advanced to hardware trials" },
+  { metric: "17.56 s", context: "Best counted time on the 17-gate, ~272 m course" },
   { metric: "17/17 Gates, Zero Collisions", context: "First full-course completion — 22 July 2026" },
   { metric: "~0.8 m Position RMS", context: "Estimator accuracy vs. ground truth over 253 m of flight" }
 ]} />
@@ -90,5 +91,8 @@ Flight accuracy is scored **only** against an independent ground-truth observer 
 ## Results
 
 - **First full-course completion** with all 17 gates registered and zero collisions: **22 July 2026**, pure vision.
-- **Counted record: 19.78 s**, reached by successive tuning of the speed governor, corner authority, and per-gate aim, with the full config ladder recorded in the repo.
+- **Counted record: 17.56 s**, reached by successive tuning of the speed governor, corner authority, and per-gate aim, with the full config ladder recorded in the repo.
 - **Estimator accuracy: ~0.8 m position RMS** against ground truth over 253 m of flight.
+- **Final qualifier standing: 7th of 3,000+ teams** — advancing to the first round of hardware trials in Costa Mesa, CA, where the stack moves from simulation onto real racing quadrotors.
+
+<Video src="/images/ai-grand-prix/21_second_run.mp4" caption="Full vision-only run through all 17 gates — a conservative 21 s lap, flown close to the 17.56 s counted record." />
