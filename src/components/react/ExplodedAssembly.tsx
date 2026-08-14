@@ -185,7 +185,12 @@ export function ExplodedAssembly({ layers, title, basePath = "" }: Props) {
               border: "1px solid var(--color-border-bright)",
               borderRadius: "var(--radius)",
               padding: "0.5rem 0.75rem",
+              // Absolutely-positioned boxes shrink to the space left of the
+              // container edge before the centering transform applies, so
+              // right-side labels collapse without an explicit width.
+              width: "max-content",
               maxWidth: 220,
+              boxSizing: "border-box",
               fontSize: "0.75rem",
               color: "var(--color-text)",
               lineHeight: 1.4,

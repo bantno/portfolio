@@ -33,8 +33,8 @@
     "svgPath": "/images/layers/chonki/drivetrain.png",
     "svgPath2": "/images/layers/chonki/drivetrain_side.png",
     "annotations": [
-      { "ax": 40, "ay": 45, "lx": 12, "ly": 18, "text": "3:1 right-angle bevel gear reduction \u2014 up from 2:1, dramatically more pushing power" },
-      { "ax": 60, "ay": 50, "lx": 85, "ly": 78, "text": "Modular shuffler pods \u2014 self-contained units, field-swappable in ~15 minutes" }
+      { "ax": 61, "ay": 27, "lx": 24, "ly": 16, "text": "3:1 right-angle bevel gear reduction \u2014 up from 2:1, dramatically more pushing power" },
+      { "ax": 37, "ay": 85, "lx": 80, "ly": 71, "text": "Modular shuffler pods \u2014 self-contained units, field-swappable in ~15 minutes" }
     ]
   },
   {
@@ -42,8 +42,8 @@
     "label": "Electronics",
     "svgPath": "/images/layers/chonki/electronics.png",
     "annotations": [
-      { "ax": 45, "ay": 38, "lx": 12, "ly": 18, "text": "Two independent circuits \u2014 drive and weapon \u2014 each with dual batteries in series" },
-      { "ax": 55, "ay": 58, "lx": 85, "ly": 78, "text": "3D-printed enclosures with dedicated battery slots and wire-routing channels" }
+      { "ax": 61, "ay": 40, "lx": 22, "ly": 14, "text": "Two independent circuits \u2014 drive and weapon \u2014 each with dual batteries in series" },
+      { "ax": 62, "ay": 63, "lx": 84, "ly": 86, "text": "3D-printed enclosures with dedicated battery slots and wire-routing channels" }
     ]
   }
 ]
