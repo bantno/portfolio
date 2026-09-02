@@ -14,7 +14,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     <!-- Desktop links -->
     <div class="nav-links">
-      <a href={`${base}/`}>Home</a>
+      <a href={`${base}/`}>Overview</a>
       <div class="nav-dropdown">
         <button class="nav-dropdown-trigger" aria-expanded="false" aria-haspopup="true">
           Projects <span class="dropdown-arrow">▾</span>
@@ -29,7 +29,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </div>
       </div>
       <a href={`${base}/career`}>Career</a>
-      <a href={`${base}/about`}>About</a>
+      <a href={`${base}/#contact`}>Contact</a>
     </div>
 
     <!-- Mobile hamburger -->
@@ -42,7 +42,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   <!-- Mobile menu -->
   <div class="mobile-menu">
-    <a href={`${base}/`}>Home</a>
+    <a href={`${base}/`}>Overview</a>
     <div class="mobile-section-label">Projects</div>
     {navProjects.map((p) => (
       <a href={`${base}/projects/${p.id.replace(/\.mdx?$/, "")}`} class="mobile-project-link">
@@ -50,7 +50,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </a>
     ))}
     <a href={`${base}/career`}>Career</a>
-    <a href={`${base}/about`}>About</a>
+    <a href={`${base}/#contact`}>Contact</a>
   </div>
 </nav>
 

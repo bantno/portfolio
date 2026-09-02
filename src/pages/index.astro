@@ -20,38 +20,104 @@ const statusClass: Record<string, string> = {
 ---
 
 <Base>
+  <!-- Flight-trace scroll progress bar -->
+  <div id="trace-bar" aria-hidden="true">
+    <svg viewBox="0 0 1000 30" preserveAspectRatio="none">
+      <path id="trace-path" d="M0,22 L60,22 L100,9 L160,9 L200,18 L260,5 L320,15 L380,4 L440,13 L500,7 L560,16 L620,5 L680,14 L740,4 L800,13 L860,7 L920,16 L1000,9"/>
+      <path id="trace-fill" d="M0,22 L60,22 L100,9 L160,9 L200,18 L260,5 L320,15 L380,4 L440,13 L500,7 L560,16 L620,5 L680,14 L740,4 L800,13 L860,7 L920,16 L1000,9"/>
+    </svg>
+  </div>
+
   <Nav />
   <main>
-    <!-- Hero -->
-    <section class="hero">
-      <div class="readout">
-        <span>33.7756°N 84.3963°W</span>
-        <span>SYS:NOMINAL</span>
-        <span>STATUS:ACTIVE</span>
-      </div>
-
-      <div class="hero-inner container">
-        <div class="hero-image">
-          <img src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/images/hero.jpg`} alt="Brian Epstein with hardware" />
-        </div>
-        <p class="hero-tag">ROBOTICS & CONTROLS · PhD CANDIDATE</p>
-        <h1 class="hero-name">Brian Epstein</h1>
-        <p class="hero-role">
-          PhD candidate building robotic systems that bridge the gap between simulation and the real world — from solar-powered seaplanes to combat robots.
+    <div class="container">
+      <!-- Hero -->
+      <section class="hero">
+        <p class="eyebrow">Atlanta, GA · Georgia Tech · PhD Candidate</p>
+        <h1 class="hero-title">Brian Epstein</h1>
+        <p class="role-line">
+          PhD candidate building <strong>autonomous systems that bridge simulation and the real world</strong> — from a solar-powered seaplane UAV to championship combat robots, plus the planners, estimators, and control loops that run them.
         </p>
-      </div>
-    </section>
+        <div class="stat-strip">
+          <div class="stat"><div class="k">Program</div><div class="v">Ph.D. Mechanical Eng.</div></div>
+          <div class="stat"><div class="k">GPA</div><div class="v">4.00 / 4.00</div></div>
+          <div class="stat"><div class="k">Graduation</div><div class="v">Fall 2026</div></div>
+          <div class="stat"><div class="k">Focus</div><div class="v">Autonomy &amp; Controls</div></div>
+        </div>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#projects">View projects →</a>
+          <a class="btn btn-ghost" href={`${BASE}/resume.pdf`} target="_blank" rel="noopener">Download résumé (PDF)</a>
+        </div>
+      </section>
 
-    <!-- Project Grid -->
-    <section class="projects">
-      <div class="container">
-        <h2 class="section-label">// SYSTEMS</h2>
+      <!-- 01 — About -->
+      <section class="block" id="about">
+        <div class="sec-head"><h2>About</h2><span class="sec-tag">01 — Overview</span></div>
+        <div class="about-grid">
+          <div class="about-text">
+            <p>
+              I'm a PhD candidate in Mechanical Engineering at Georgia Tech, graduating Fall 2026. My work spans the full design cycle — from mathematical modeling and simulation to hardware fabrication and flight testing. I specialize in autonomous systems and controls, with particular depth in aerial vehicles and energy-aware mission planning.
+            </p>
+            <p>
+              My research philosophy centers on closing the gap between simulation and the real world. Every system I build gets tested in hardware, every algorithm gets validated against physical data, and every design decision is driven by what actually works in the field.
+            </p>
+            <p>
+              Outside the lab, I've spent eight years in competitive combat robotics through Georgia Tech's RoboJackets. Chonki — the robot I lead — became NHRL's first collegiate featherweight champion and earned over 50 million social media views. The same iterative design mindset that wins championships drives my research.
+            </p>
+          </div>
+          <div class="about-side">
+            <img src={`${BASE}/images/headshot.jpg`} alt="Brian Epstein" class="headshot" />
+            <div class="edu-card">
+              <div class="school">Georgia Institute of Technology</div>
+              <div class="degree-row">
+                <span>Ph.D. Mechanical Engineering — Autonomy &amp; Controls</span>
+                <span class="degree-when">2022 – 2026</span>
+              </div>
+              <div class="degree-row">
+                <span>M.S. Mechanical Engineering — Controls &amp; Robotics, Mechatronics &amp; Design</span>
+                <span class="degree-when">2022 – 2024</span>
+              </div>
+              <div class="degree-row">
+                <span>B.S. Mechanical Engineering — Minor in Robotics, Highest Honors</span>
+                <span class="degree-when">2018 – 2022</span>
+              </div>
+              <div class="edu-meta">
+                <span>GPA <b>4.00 / 4.00</b></span>
+                <span>Graduating <b>Fall 2026</b></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-grid">
+          <div class="skill-card">
+            <h4>Fabrication</h4>
+            <ul><li>Waterjet</li><li>Laser Cutter</li><li>3D Printing</li><li>CNC / Manual Machining</li><li>Soldering &amp; Wiring Harnesses</li><li>Environmental Sealing</li><li>Payload Integration</li></ul>
+          </div>
+          <div class="skill-card">
+            <h4>Software</h4>
+            <ul><li>Python</li><li>MATLAB / Simulink</li><li>C / C++</li><li>ROS2</li><li>PX4</li><li>Gazebo / JSBSim</li><li>LabVIEW</li></ul>
+          </div>
+          <div class="skill-card">
+            <h4>CAD &amp; Analysis</h4>
+            <ul><li>SolidWorks</li><li>Autodesk Inventor</li><li>Fusion 360</li><li>PTC Creo</li><li>OpenVSP / VSPAERO</li></ul>
+          </div>
+          <div class="skill-card">
+            <h4>Focus Areas</h4>
+            <ul><li>Flight Testing</li><li>State Estimation</li><li>Optimal Control</li><li>MDP Mission Planning</li><li>Mechatronic Design</li></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 — Projects -->
+      <section class="block" id="projects">
+        <div class="sec-head"><h2>Projects</h2><span class="sec-tag">02 — Systems</span></div>
         <div class="project-grid">
           {sorted.map((project, i) => {
             const d = project.data;
             const isBrief = d.tier === "brief";
             const isProminent = d.tier === "flagship" || d.tier === "featured";
-            const href = isBrief ? undefined : `${import.meta.env.BASE_URL.replace(/\/$/, '')}/projects/${project.id.replace(/\.mdx?$/, "")}`;
+            const href = isBrief ? undefined : `${BASE}/projects/${project.id.replace(/\.mdx?$/, "")}`;
             const Tag = isBrief ? "div" : "a";
 
             return (
@@ -122,120 +188,361 @@ const statusClass: Record<string, string> = {
             );
           })}
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- 03 — Publications -->
+      <section class="block" id="publications">
+        <div class="sec-head"><h2>Publications</h2><span class="sec-tag">03 — Papers</span></div>
+        <ul class="pub-list">
+          <li class="pub-entry">
+            B. Epstein and J. D. Rogers, "Optimal flight planning for marine mammal surveillance from a seaplane UAV," <em>AIAA Journal of Aircraft</em> (in press).
+          </li>
+          <li class="pub-entry">
+            B. Epstein and J. D. Rogers, "Conceptual Design of a Low-Altitude Solar Powered Seaplane for Oceanic Monitoring," <em>AIAA AVIATION FORUM AND ASCEND 2024</em>.
+          </li>
+          <li class="pub-entry">
+            Ward, D, Epstein, B, Tiziani, L, &amp; Hammond, FL, III. "Optimal Design of a Mechatronic Lever Arm for Pneumatic Exoskeleton: Design and Validation." <em>2021 Design of Medical Devices Conference</em>.
+          </li>
+        </ul>
+      </section>
+
+      <!-- 04 — Contact -->
+      <section class="block" id="contact">
+        <div class="contact-grid">
+          <div>
+            <h2 class="contact-heading">Let's build something that works in the real world.</h2>
+            <p class="contact-lead">Open to roles and collaborations in robotics, controls, and flight test. Reach out any of these ways.</p>
+          </div>
+          <ul class="contact-list">
+            <li><span class="k">Email</span><a href="mailto:bepstein8@gatech.edu">bepstein8@gatech.edu</a></li>
+            <li><span class="k">LinkedIn</span><a href="https://linkedin.com/in/br-epstein" target="_blank" rel="noopener noreferrer">/in/br-epstein</a></li>
+            <li><span class="k">GitHub</span><a href="https://github.com/bantno" target="_blank" rel="noopener noreferrer">github.com/bantno</a></li>
+            <li><span class="k">Location</span><span>Atlanta, GA</span></li>
+            <li><span class="k">Résumé</span><a href={`${BASE}/resume.pdf`} target="_blank" rel="noopener">Download PDF</a></li>
+          </ul>
+        </div>
+      </section>
+    </div>
   </main>
   <Footer />
 </Base>
 
+<script>
+  // flight-trace scroll progress
+  const fill = document.getElementById("trace-fill") as SVGPathElement | null;
+  if (fill) {
+    const total = fill.getTotalLength();
+    fill.style.strokeDasharray = String(total);
+    fill.style.strokeDashoffset = String(total);
+    const onScroll = () => {
+      const doc = document.documentElement;
+      const scrollTop = doc.scrollTop || document.body.scrollTop;
+      const scrollHeight = doc.scrollHeight - doc.clientHeight || 1;
+      const pct = Math.min(Math.max(scrollTop / scrollHeight, 0), 1);
+      fill.style.strokeDashoffset = String(total - total * pct);
+    };
+    document.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
+</script>
+
+<style is:global>
+  /* Trace bar sits above the fixed nav on this page only */
+  body:has(#trace-bar) .nav {
+    top: 30px;
+  }
+</style>
+
 <style>
+  #trace-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    z-index: 200;
+    background: rgba(10, 14, 26, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--color-border);
+  }
+  #trace-bar svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  #trace-path {
+    fill: none;
+    stroke: var(--color-border-bright);
+    stroke-width: 1.25;
+  }
+  #trace-fill {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 1.75;
+  }
+
   /* ── Hero ──────────────────────────────────────────────── */
   .hero {
-    position: relative;
-    min-height: 80vh;
+    padding-top: calc(86px + var(--space-xl));
+    padding-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-xl);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-status-complete);
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
-    padding-top: 56px;
-    overflow: hidden;
+    gap: 10px;
   }
-
-  .hero::before {
+  .eyebrow::before {
     content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(232, 197, 71, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(232, 197, 71, 0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(232, 197, 71, 0.18);
   }
 
-  .readout {
-    position: absolute;
-    top: 72px;
-    right: var(--space-lg);
+  .hero-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 800;
+    line-height: 1.03;
+    letter-spacing: -0.01em;
+    color: var(--color-text-bright);
+    max-width: 16ch;
+  }
+
+  .role-line {
+    font-size: clamp(1.02rem, 2vw, 1.25rem);
+    color: var(--color-text);
+    margin-top: 18px;
+    max-width: 56ch;
+    line-height: 1.55;
+  }
+  .role-line strong {
+    color: var(--color-text-bright);
+    font-weight: 600;
+  }
+
+  .stat-strip {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border);
+  }
+  .stat {
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding: 16px 18px;
+    background: var(--color-bg-raised);
+  }
+  .stat .k {
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
     color: var(--color-text-muted);
+    margin-bottom: 8px;
+  }
+  .stat .v {
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: var(--color-text-bright);
+  }
+
+  .hero-cta {
+    margin-top: 36px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 12px 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.15s ease, background 0.15s, color 0.15s, border-color 0.15s;
+    border-radius: var(--radius);
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .btn-primary:hover {
+    background: var(--color-text-bright);
+    color: var(--color-bg);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-border-bright);
+    color: var(--color-text);
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-1px);
+  }
+
+  /* ── Section scaffolding ───────────────────────────────── */
+  .block {
+    padding-bottom: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--color-border);
+    scroll-margin-top: 110px;
+  }
+  .block:last-of-type {
+    border-bottom: none;
+  }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 38px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .sec-head h2 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    font-weight: 700;
+    color: var(--color-text-bright);
+  }
+  .sec-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+
+  /* ── About ─────────────────────────────────────────────── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 60px;
+  }
+  .about-text p {
+    color: var(--color-text);
+    font-size: 1.02rem;
+    max-width: 56ch;
+    line-height: 1.7;
+  }
+  .about-text p + p {
+    margin-top: 16px;
+  }
+
+  .about-side {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
-    opacity: 0.6;
+    gap: var(--space-md);
   }
 
-  .hero-inner {
-    position: relative;
-    z-index: 1;
-  }
-
-  .hero-image {
+  .headshot {
     width: 100%;
-    max-height: 400px;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    margin-bottom: var(--space-xl);
+    max-width: 260px;
+    object-fit: cover;
+    border-radius: var(--radius);
     border: 1px solid var(--color-border);
   }
 
-  .hero-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  .edu-card {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-card);
+    padding: 24px;
+    border-radius: var(--radius);
+  }
+  .edu-card .school {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--color-text-bright);
+  }
+  .degree-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-md);
+    color: var(--color-text);
+    margin-top: 10px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  .degree-when {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+  .edu-meta {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--color-border-bright);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--color-text-muted);
+  }
+  .edu-meta b {
+    color: var(--color-text-bright);
+    font-weight: 600;
   }
 
-  .hero-tag {
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--color-border);
+    border: 1px solid var(--color-border);
+    margin-top: 60px;
+  }
+  .skill-card {
+    background: var(--color-bg-card);
+    padding: 24px;
+  }
+  .skill-card h4 {
     font-family: var(--font-mono);
     font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--color-accent);
-    letter-spacing: 0.2em;
-    margin-bottom: var(--space-md);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-status-complete);
+    margin-bottom: 14px;
   }
-
-  .hero-name {
-    font-family: var(--font-heading);
-    font-size: clamp(2.5rem, 7vw, 5rem);
-    font-weight: 800;
-    color: var(--color-text-bright);
-    line-height: 1.1;
-    margin-bottom: var(--space-md);
+  .skill-card ul {
+    list-style: none;
   }
-
-  .hero-role {
-    font-size: 1.1rem;
+  .skill-card li {
+    font-size: 0.88rem;
     color: var(--color-text);
-    max-width: 700px;
-    line-height: 1.6;
+    padding: 6px 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .skill-card li:first-child {
+    border-top: none;
   }
 
-  /* ── Projects Section ──────────────────────────────────── */
-  .projects {
-    padding: var(--space-2xl) 0;
-  }
-
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--color-accent);
-    letter-spacing: 0.15em;
-    margin-bottom: var(--space-lg);
-  }
-
+  /* ── Project grid ──────────────────────────────────────── */
   .project-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     gap: var(--space-lg);
   }
 
-  /* Prominent cards span wider */
   .card-prominent {
     grid-column: span 1;
   }
 
-  /* Card styles */
   .card {
     background: var(--color-bg-card);
     border: 1px solid var(--color-border);
@@ -261,7 +568,6 @@ const statusClass: Record<string, string> = {
     border-color: var(--color-border);
   }
 
-  /* Card media */
   .card-media {
     aspect-ratio: 16 / 9;
     overflow: hidden;
@@ -300,7 +606,6 @@ const statusClass: Record<string, string> = {
     opacity: 0.4;
   }
 
-  /* Card body */
   .card-body {
     padding: var(--space-lg);
   }
@@ -424,9 +729,88 @@ const statusClass: Record<string, string> = {
     border-radius: 3px;
   }
 
-  @media (max-width: 600px) {
-    .readout {
-      display: none;
+  /* ── Publications ──────────────────────────────────────── */
+  .pub-list {
+    list-style: none;
+  }
+  .pub-entry {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--color-text);
+    padding: 15px 0;
+    border-top: 1px solid var(--color-border);
+    max-width: 80ch;
+  }
+  .pub-entry:last-child {
+    border-bottom: 1px solid var(--color-border);
+  }
+  .pub-entry em {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  /* ── Contact ───────────────────────────────────────────── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 60px;
+    align-items: end;
+  }
+  .contact-heading {
+    font-family: var(--font-heading);
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 700;
+    max-width: 14ch;
+    line-height: 1.06;
+    color: var(--color-text-bright);
+  }
+  .contact-lead {
+    color: var(--color-text-muted);
+    margin-top: 16px;
+    max-width: 44ch;
+  }
+  .contact-list {
+    list-style: none;
+  }
+  .contact-list li {
+    border-top: 1px solid var(--color-border);
+    padding: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md);
+    color: var(--color-text);
+  }
+  .contact-list li:last-child {
+    border-bottom: 1px solid var(--color-border);
+  }
+  .contact-list .k {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+  }
+  .contact-list a {
+    font-weight: 500;
+    color: var(--color-text-bright);
+  }
+  .contact-list a:hover {
+    color: var(--color-accent);
+  }
+
+  /* ── Responsive ────────────────────────────────────────── */
+  @media (max-width: 860px) {
+    .stat-strip {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .about-grid,
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+    .skill-grid {
+      grid-template-columns: 1fr;
     }
     .project-grid {
       grid-template-columns: 1fr;
