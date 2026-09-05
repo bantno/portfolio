@@ -3,225 +3,322 @@ import Base from "../layouts/Base.astro";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import TimelineEntry from "../components/TimelineEntry.astro";
+import career from "../data/career.json";
+
+type Category = keyof typeof career.categories;
+type Entry = (typeof career.entries)[number];
+
+const categories = career.categories as Record<Category, { label: string }>;
+
+// Most recent first. Ongoing roles (end === null) sort ahead of finished ones
+// that share the same start month.
+const endKey = (e: Entry) => e.end ?? "9999-99";
+const sorted = [...career.entries].sort(
+  (a, b) => b.start.localeCompare(a.start) || endKey(b).localeCompare(endKey(a)),
+);
+
+// Group by start year so the spine can carry year markers.
+const byYear: { year: string; entries: Entry[] }[] = [];
+for (const e of sorted) {
+  const year = e.start.slice(0, 4);
+  const last = byYear[byYear.length - 1];
+  if (last && last.year === year) last.entries.push(e);
+  else byYear.push({ year, entries: [e] });
+}
+
+const categoryKeys = Object.keys(categories) as Category[];
+const counts = Object.fromEntries(
+  categoryKeys.map((c) => [c, sorted.filter((e) => e.category === c).length]),
+) as Record<Category, number>;
+
+const firstYear = sorted[sorted.length - 1].start.slice(0, 4);
+const lastYear = sorted.some((e) => e.end === null)
+  ? "Present"
+  : sorted.reduce((m, e) => (e.end && e.end > m ? e.end : m), "").slice(0, 4);
 ---
 
 <Base title="Career — Brian Epstein">
   <Nav />
   <main class="career-page">
     <div class="container">
-      <h1 class="page-title">// CAREER TIMELINE</h1>
-      <p class="page-subtitle">Georgia Tech research and industry experience, 2018–2026.</p>
+      <header class="page-head">
+        <p class="eyebrow">Career · {firstYear} – {lastYear}</p>
+        <h1 class="page-title">Experience</h1>
+        <p class="page-subtitle">
+          Research, industry, teaching, and leadership roles at Georgia Tech and beyond, on one timeline.
+          Filter by track to follow a single thread.
+        </p>
+      </header>
 
-      <div class="timeline">
-        <!-- Track labels for desktop -->
-        <div class="track-headers">
-          <span class="track-label track-label-academic">Georgia Tech</span>
-          <span class="track-label track-label-industry">Industry</span>
-        </div>
-
-        <div class="timeline-grid">
-          <!-- Left column: Academic -->
-          <div class="timeline-track academic-track">
-            <TimelineEntry
-              title="Graduate Researcher — Hypersonic Vehicles"
-              org="Georgia Tech, UCAH"
-              dateRange="Aug 2025 – Jun 2026"
-              description="State estimation for fault-tolerant control of hypersonic vehicles in Simulink and C++. Analyzed hypersonic flight test data to characterize vehicle behavior and inform estimator design."
-              track="academic"
-            />
-            <TimelineEntry
-              title="Woodruff Graduate Leaders Fellow"
-              org="Georgia Tech, Woodruff School of Mechanical Engineering"
-              dateRange="Fall 2025"
-              description="Selected to the inaugural 22-fellow cohort from the College of Engineering. Represented graduate student concerns to administration, proposing solutions adopted into the program's continuation."
-              track="academic"
-            />
-            <TimelineEntry
-              title="Flight Test Engineering Course Assistant"
-              org="Georgia Institute of Technology"
-              dateRange="Spring 2024 & Spring 2025"
-              description="Primary point of contact for 60 students per semester on lab, hardware, and flight-dynamics questions. Built Simulink flight-dynamics models integrated with X-Plane 12, and stood up shared simulator procedures in the course's inaugural semester."
-              track="academic"
-            />
-            <TimelineEntry
-              title="Graduate Researcher — Solar Seaplane (Dissertation)"
-              org="Georgia Tech, Aerial Robotics Lab"
-              dateRange="Aug 2023 – Present"
-              description="Dissertation work on a solar-powered seaplane UAV for autonomous ocean monitoring. MDP flight planning, aerodynamic analysis, and flight testing."
-              track="academic"
-              projectLink="/projects/seaplane"
-            />
-            <TimelineEntry
-              title="Undergraduate Research Mentor"
-              org="Georgia Tech, Aerial Robotics Lab"
-              dateRange="2023 – Present"
-              description="Mentored over 25 undergraduate researchers across machine design, manufacturing, controls, and flight testing. Mentees have advanced to Sandia National Laboratories, Bell, and aerospace-robotics PhD programs."
-              track="academic"
-            />
-            <TimelineEntry
-              title="Graduate Researcher — Drone Capture System"
-              org="Georgia Tech, Aerial Robotics Lab"
-              dateRange="Aug 2022 – May 2023"
-              description="Autonomy for aerial interceptor drone. ROS2 control stack, RRT* path planning, and mechanical grasping payload."
-              track="academic"
-              projectLink="/projects/drone-capture"
-            />
-            <TimelineEntry
-              title="Undergraduate Researcher"
-              org="Georgia Tech, Aerial Robotics Lab"
-              dateRange="Jan 2022 – May 2022"
-              description="ROS2 nodes for autonomous quadcopter landing. IR camera gimbal system for precision tracking."
-              track="academic"
-            />
-            <TimelineEntry
-              title="Undergraduate Researcher"
-              org="Georgia Tech, Adaptive Robotic Manipulation Lab"
-              dateRange="Aug 2020 – May 2021"
-              description="Low-level motor control for pneumatic knee exoskeleton. Published at Design of Medical Devices Conference 2021."
-              track="academic"
-            />
-            <TimelineEntry
-              title="RoboJackets — Team Mentor"
-              org="Georgia Tech RoboJackets"
-              dateRange="2021 – Present"
-              description="Mentoring undergraduate combat robotics teams on design, fabrication, and competition strategy. Serve on the board of RoboJackets Inc., the 501(c)(3) managing sponsorship funds and competition winnings for the club."
-              track="academic"
-              projectLink="/projects/chonki"
-            />
-            <TimelineEntry
-              title="RoboJackets — Team Lead"
-              org="Georgia Tech RoboJackets"
-              dateRange="2020 – 2021"
-              description="Led the competitive combat robotics team. Oversaw design, manufacturing, and competition logistics."
-              track="academic"
-            />
-            <TimelineEntry
-              title="RoboJackets — Sponsorship Chair"
-              org="Georgia Tech RoboJackets"
-              dateRange="2020 – 2021"
-              description="Managed corporate sponsorships and partnerships for the organization."
-              track="academic"
-            />
-            <TimelineEntry
-              title="RoboJackets — Mech Training Lead / 3lb Mentor"
-              org="Georgia Tech RoboJackets"
-              dateRange="2019 – 2020"
-              description="Trained new members on mechanical design and fabrication. Mentored 3lb combat robot teams."
-              track="academic"
-            />
-            <TimelineEntry
-              title="Emerging Leaders — Member, then Board of Advisors"
-              org="Georgia Institute of Technology"
-              dateRange="2018 – 2021"
-              description="Completed a year-long leadership program with a 30-student cohort, then returned for two years on the Board of Advisors — shaping cohort selection, curriculum, and the fall retreat for each incoming class."
-              track="academic"
-            />
-          </div>
-
-          <!-- Right column: Industry -->
-          <div class="timeline-track industry-track">
-            <TimelineEntry
-              title="R&D Engineering Intern"
-              org="JLG Industries"
-              dateRange="May – Aug 2022"
-              description="Vision-based depth perception with RANSAC/Open3D point cloud processing. Autonomous powerwashing demo with 6DOF manipulator and ROS2."
-              track="industry"
-            />
-            <TimelineEntry
-              title="Robotic Manufacturing Intern"
-              org="Eaton Corporation"
-              dateRange="May – Aug 2021"
-              description="Programmed Fanuc robot + CNC lathe automation cell. Achieved 75% cycle time reduction, $40K annual savings, and a further $12K cost-out in forging material handling."
-              track="industry"
-            />
-            <TimelineEntry
-              title="Engineering Intern"
-              org="East West Manufacturing"
-              dateRange="Jan – May 2020"
-              description="Eddy current braking prototype, vacuum thermoforming table, hemi-anechoic chamber design and build."
-              track="industry"
-            />
-            <TimelineEntry
-              title="Manufacturing Engineering Intern"
-              org="Lockheed Martin"
-              dateRange="May – Aug 2019"
-              description="Smart locking fixture for missile assembly. Reduced defect rate and delivered $16K under external quote."
-              track="industry"
-            />
-          </div>
-        </div>
+      <div class="filter-bar" role="group" aria-label="Filter timeline by category">
+        <button class="chip active" data-filter="all" aria-pressed="true">
+          All <span class="chip-count">{sorted.length}</span>
+        </button>
+        {categoryKeys.map((c) => (
+          <button class:list={["chip", `cat-${c}`]} data-filter={c} aria-pressed="false">
+            <span class="chip-dot" aria-hidden="true"></span>
+            {categories[c].label} <span class="chip-count">{counts[c]}</span>
+          </button>
+        ))}
       </div>
+
+      <ol class="timeline" id="timeline">
+        {byYear.map(({ year, entries }) => (
+          <li class="year-group" data-year={year}>
+            <div class="year-marker" aria-hidden="true"><span>{year}</span></div>
+            <ol class="year-entries">
+              {entries.map((e) => (
+                <TimelineEntry
+                  title={e.title}
+                  org={e.org}
+                  dateRange={e.dateRange}
+                  description={e.description}
+                  category={e.category}
+                  categoryLabel={categories[e.category as Category].label}
+                  current={e.end === null}
+                  projectLink={e.projectLink}
+                />
+              ))}
+            </ol>
+          </li>
+        ))}
+      </ol>
+
+      <p class="empty-note" id="empty-note" hidden>No entries in this category.</p>
     </div>
   </main>
   <Footer />
 </Base>
 
+<script>
+  const chips = Array.from(document.querySelectorAll<HTMLButtonElement>(".chip[data-filter]"));
+  const entries = Array.from(document.querySelectorAll<HTMLElement>(".timeline-entry[data-category]"));
+  const groups = Array.from(document.querySelectorAll<HTMLElement>(".year-group"));
+  const emptyNote = document.getElementById("empty-note");
+
+  function applyFilter(filter: string) {
+    for (const el of entries) {
+      el.hidden = filter !== "all" && el.dataset.category !== filter;
+    }
+    let visible = 0;
+    for (const g of groups) {
+      const any = Array.from(g.querySelectorAll<HTMLElement>(".timeline-entry")).some((e) => !e.hidden);
+      g.hidden = !any;
+      if (any) visible++;
+    }
+    if (emptyNote) emptyNote.hidden = visible > 0;
+    for (const c of chips) {
+      const on = c.dataset.filter === filter;
+      c.classList.toggle("active", on);
+      c.setAttribute("aria-pressed", String(on));
+    }
+    const url = new URL(window.location.href);
+    if (filter === "all") url.searchParams.delete("track");
+    else url.searchParams.set("track", filter);
+    history.replaceState(null, "", url);
+  }
+
+  for (const c of chips) {
+    c.addEventListener("click", () => applyFilter(c.dataset.filter ?? "all"));
+  }
+
+  const initial = new URLSearchParams(window.location.search).get("track");
+  if (initial && chips.some((c) => c.dataset.filter === initial)) applyFilter(initial);
+</script>
+
 <style>
   .career-page {
-    padding-top: calc(56px + var(--space-xl));
+    padding-top: calc(86px + var(--space-lg));
     padding-bottom: var(--space-2xl);
   }
 
-  .page-title {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--color-accent);
-    letter-spacing: 0.15em;
-    margin-bottom: var(--space-sm);
-  }
-
-  .page-subtitle {
-    font-size: 1rem;
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-xl);
-  }
-
-  .track-headers {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-xl);
+  /* ── Header (mirrors the landing page hero) ─────────────── */
+  .page-head {
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
     margin-bottom: var(--space-lg);
   }
-
-  .track-label {
+  .eyebrow {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
-    padding-bottom: var(--space-sm);
-    border-bottom: 2px solid;
-  }
-
-  .track-label-academic {
-    color: var(--color-accent);
-    border-color: var(--color-accent);
-  }
-
-  .track-label-industry {
     color: var(--color-status-complete);
-    border-color: var(--color-status-complete);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(232, 197, 71, 0.18);
+  }
+  .page-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--color-text-bright);
+  }
+  .page-subtitle {
+    font-size: 1.02rem;
+    color: var(--color-text);
+    margin-top: 14px;
+    max-width: 56ch;
+    line-height: 1.55;
   }
 
-  .timeline-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-xl);
+  /* ── Filter chips ───────────────────────────────────────── */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--space-xl);
+    position: sticky;
+    top: 56px;
+    z-index: 5;
+    padding: 12px 0;
+    background: linear-gradient(var(--color-bg) 85%, transparent);
+  }
+  .chip {
+    --cat: var(--color-text-bright);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 7px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border-bright);
+    color: var(--color-text);
+    background: var(--color-bg-raised);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s, transform 0.15s;
+  }
+  .chip.cat-research    { --cat: var(--color-cat-research); }
+  .chip.cat-industry    { --cat: var(--color-cat-industry); }
+  .chip.cat-teaching    { --cat: var(--color-cat-teaching); }
+  .chip.cat-leadership  { --cat: var(--color-cat-leadership); }
+  .chip.cat-robojackets { --cat: var(--color-cat-robojackets); }
+  .chip:hover {
+    border-color: var(--cat);
+    color: var(--color-text-bright);
+    transform: translateY(-1px);
+  }
+  .chip.active {
+    border-color: var(--cat);
+    color: var(--cat);
+    background: color-mix(in srgb, var(--cat) 12%, var(--color-bg-raised));
+  }
+  .chip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cat);
+  }
+  .chip-count {
+    color: var(--color-text-muted);
+    font-size: 0.66rem;
+  }
+  .chip.active .chip-count {
+    color: inherit;
+    opacity: 0.75;
+  }
+
+  /* ── Single spine timeline ──────────────────────────────── */
+  .timeline,
+  .year-entries {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .timeline {
+    position: relative;
+    padding-left: 96px;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 96px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--color-border-bright);
+  }
+
+  .year-group {
+    position: relative;
+  }
+  .year-marker {
+    position: absolute;
+    left: -96px;
+    top: 0;
+    width: 96px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .year-marker span {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+  .year-marker::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-border-bright);
+  }
+  .year-group + .year-group {
+    margin-top: var(--space-lg);
+  }
+
+  .empty-note {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    padding: var(--space-lg) 0;
   }
 
   @media (max-width: 768px) {
-    .track-headers {
-      grid-template-columns: 1fr;
-      gap: var(--space-sm);
+    .career-page {
+      padding-top: calc(56px + var(--space-lg));
     }
-    .timeline-grid {
-      grid-template-columns: 1fr;
-      gap: var(--space-lg);
+    .filter-bar {
+      position: static;
+      padding: 0;
+      background: none;
+      margin-bottom: var(--space-lg);
     }
-    .industry-track {
-      border-top: 1px solid var(--color-border);
-      padding-top: var(--space-lg);
+    .timeline {
+      padding-left: 12px;
+    }
+    .timeline::before {
+      left: 12px;
+    }
+    .year-group {
+      padding-top: 28px;
+    }
+    .year-marker {
+      left: -12px;
+      top: 0;
+      width: auto;
+    }
+    .year-marker span {
+      background: var(--color-bg);
+      padding-right: 8px;
+    }
+    .year-marker::after {
+      display: none;
     }
   }
 </style>

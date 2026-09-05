@@ -4,72 +4,101 @@ interface Props {
   org: string;
   dateRange: string;
   description: string;
-  track: "academic" | "industry";
+  category: string;
+  categoryLabel: string;
+  current?: boolean;
   projectLink?: string;
 }
 
-const { title, org, dateRange, description, track, projectLink } = Astro.props;
+const { title, org, dateRange, description, category, categoryLabel, current = false, projectLink } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
-<div class:list={["timeline-entry", track]}>
-  <div class="entry-marker"></div>
+<li class:list={["timeline-entry", `cat-${category}`, { current }]} data-category={category}>
+  <div class="entry-marker" aria-hidden="true"></div>
   <div class="entry-content">
-    <div class="entry-date">{dateRange}</div>
+    <div class="entry-meta">
+      <span class="entry-date">{dateRange}</span>
+      <span class="entry-cat">{categoryLabel}</span>
+    </div>
     <div class="entry-title">{title}</div>
     <div class="entry-org">{org}</div>
-    <div class="entry-desc">{description}</div>
+    <p class="entry-desc">{description}</p>
     {projectLink && (
       <a href={`${base}${projectLink}`} class="entry-link">See full project →</a>
     )}
   </div>
-</div>
+</li>
 
 <style>
   .timeline-entry {
+    --cat: var(--color-text-muted);
     display: flex;
     gap: var(--space-md);
-    padding: var(--space-md) 0;
     position: relative;
+    list-style: none;
   }
+  .timeline-entry[hidden] {
+    display: none;
+  }
+  .cat-research    { --cat: var(--color-cat-research); }
+  .cat-industry    { --cat: var(--color-cat-industry); }
+  .cat-teaching    { --cat: var(--color-cat-teaching); }
+  .cat-leadership  { --cat: var(--color-cat-leadership); }
+  .cat-robojackets { --cat: var(--color-cat-robojackets); }
 
   .entry-marker {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     flex-shrink: 0;
-    margin-top: 4px;
-    border: 2px solid;
+    margin-top: 5px;
+    margin-left: -6px; /* center on the spine */
+    background: var(--cat);
+    box-shadow: 0 0 0 3px var(--color-bg);
   }
-
-  .academic .entry-marker {
-    border-color: var(--color-accent);
-    background: var(--color-accent);
-  }
-
-  .industry .entry-marker {
-    border-color: var(--color-status-complete);
-    background: var(--color-status-complete);
+  .current .entry-marker {
+    box-shadow: 0 0 0 3px var(--color-bg), 0 0 0 5px color-mix(in srgb, var(--cat) 35%, transparent);
   }
 
   .entry-content {
     flex: 1;
-    padding-bottom: var(--space-md);
+    padding: 0 0 var(--space-lg);
     border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-lg);
+  }
+  .timeline-entry:last-child .entry-content {
+    border-bottom: none;
+    margin-bottom: 0;
   }
 
-  .entry-date {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    letter-spacing: 0.05em;
+  .entry-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
     margin-bottom: var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+  }
+  .entry-date {
+    color: var(--color-text-muted);
+  }
+  .entry-cat {
+    color: var(--cat);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.64rem;
+    padding: 2px 8px;
+    border: 1px solid color-mix(in srgb, var(--cat) 40%, transparent);
+    border-radius: 999px;
   }
 
   .entry-title {
     font-family: var(--font-heading);
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--color-text-bright);
     margin-bottom: var(--space-xs);
@@ -83,9 +112,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
 
   .entry-desc {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: var(--color-text);
-    line-height: 1.5;
+    line-height: 1.55;
+    max-width: 68ch;
+    margin: 0;
   }
 
   .entry-link {

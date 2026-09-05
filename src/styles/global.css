@@ -20,6 +20,13 @@
   --color-status-complete: #4788e8;
   --color-status-dev:      #e8a647;
 
+  /* ── Career timeline category colors ─────────────────────── */
+  --color-cat-research:    #e8c547;
+  --color-cat-industry:    #4788e8;
+  --color-cat-teaching:    #47e878;
+  --color-cat-leadership:  #e8a647;
+  --color-cat-robojackets: #ff6b6b;
+
   /* ── Interactive component colors (MDPDemo policy comparison) ── */
   --color-user-policy:     #ff6b6b;
   --color-optimal-policy:  #51cf66;
