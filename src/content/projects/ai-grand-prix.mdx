@@ -1,6 +1,6 @@
 ---
 title: "AI Grand Prix — Vision-Only Autonomous Drone Racing"
-summary: "Flight software for the Anduril-backed AI Grand Prix Round-2 qualifier: a racing quadrotor flies a 17-gate course fully autonomously with no GPS, no pose telemetry, and no gate coordinates — recovering attitude, velocity, and position from a raw IMU and a single camera. Placed 7th out of 3,000+ teams — advancing to the first round of hardware trials in Costa Mesa."
+summary: "Flight software for the Anduril-backed AI Grand Prix: a racing quadrotor flies a gate course fully autonomously with no GPS and no pose telemetry, recovering attitude, velocity and position from a raw IMU and a single camera. Placed 7th of 3,000+ teams in the simulator qualifier; the same stack is now flying on real hardware in the physical qualifier."
 status: "Active"
 domain: "Aerial Autonomy"
 tier: featured
@@ -15,14 +15,12 @@ tags:
   - state estimation
   - Kalman filtering
   - guidance & control
-  - MAVLink
+  - embedded autonomy
 metrics:
-  - label: "Standing"
-    value: "7th of 3,000+ Teams"
-  - label: "Best Lap"
-    value: "17.56 s"
+  - label: "Qualifier Standing"
+    value: "7th of 3,000+"
   - label: "Sensing"
-    value: "Vision-Only"
+    value: "Camera + IMU Only"
 ---
 import ResultProof from '../../components/ResultProof.astro';
 import Video from '../../components/Video.astro';
@@ -31,68 +29,117 @@ import Video from '../../components/Video.astro';
 
 The [AI Grand Prix](https://www.theaigrandprix.com/) is an autonomous drone racing competition conceived by Anduril founder Palmer Luckey, in partnership with the Drone Champions League, Neros Technologies, and JobsOhio. Teams write autonomy software that pilots racing drones through professional courses with **zero human intervention**, competing for a share of a **$500,000** prize pool and engineering roles at Anduril.
 
+Qualifying runs in two stages. The **virtual qualifier** narrowed a field of over 3,000 teams in simulation; the surviving teams advance to the **physical qualifier**, where the same autonomy has to fly a real racing quadrotor through a real course. We placed 7th in the virtual round and are in the physical round now.
+
+The qualifier is still live. What follows is the architecture and the reasoning behind it — the calibrated constants, thresholds and tuning that make it actually work stay with the team until the competition closes.
+
 <ResultProof metrics={[
-  { metric: "7th of 3,000+ Teams", context: "Round-2 qualifier standing — advanced to hardware trials" },
-  { metric: "17.56 s", context: "Best counted time on the 17-gate, ~272 m course" },
-  { metric: "17/17 Gates, Zero Collisions", context: "First full-course completion — 22 July 2026" },
-  { metric: "~0.8 m Position RMS", context: "Estimator accuracy vs. ground truth over 253 m of flight" }
+  { metric: "7th of 3,000+ Teams", context: "Virtual qualifier standing — advanced to the physical round" },
+  { metric: "17.56 s", context: "Best counted time on the 17-gate simulator course" },
+  { metric: "3 × 30 s Autonomous Hover", context: "First closed-loop vision flights on the real airframe" },
+  { metric: "Real-Time Onboard", context: "Detection, estimation, guidance and control all in the flight loop" }
 ]} />
 
-## The Round-2 Problem
+## Phase One — The Simulator Qualifier
+
+### The Round-2 Problem
 
 Round 2 strips away every absolute reference. What the simulator will still tell you, and what it won't:
 
-- **Available:** a raw IMU (body-frame specific force and body rates, ~80 Hz), a 640×360 onboard camera at ~30 Hz, collision events, and a race-status gate counter.
+- **Available:** a raw IMU (body-frame specific force and body rates), an onboard camera, collision events, and a race-status gate counter.
 - **Disabled:** GPS, attitude, position, odometry — those fields come back null — **and the gate coordinates themselves.**
 - **Control surface:** body rates plus collective throttle. The actuator and position/velocity setpoint paths are dead.
 
 So the stack has to recover attitude, velocity, and position from IMU and vision alone, then fly a geometric controller through gate openings **1.5 m square**. Three subsystems carry that: a gate detector, a 15-state error-state Kalman filter, and an SE(3) tracking controller.
 
-## Gate Detection
+### Gate Detection
 
 The only source of gate localization — each camera frame becomes range, bearing, and where resolvable a full 6-DOF gate pose, each tagged with explicit trust flags telling the estimator which parts to believe.
 
-- **Segmentation is brightness-invariant.** Gate markers pulse, so absolute HSV floors produce an unstable blob frame to frame. The shipped mask keys on **red dominance** — `R − max(G,B) ≥ 30` and `R ≥ 45` — closed with a 5×5 morphological kernel to bridge the blue targeting beam that otherwise severs the ring into a C-arc.
-- **Non-gate red is rejected structurally, not by hue.** A real gate is a hollow, near-square ring; the ceiling arrows and the "AI-GP" banner are solid. A blob is dropped only when it is both solid *and* wide.
-- **Pose recovery cascades by range.** A fully-visible ring solves through `SOLVEPNP_IPPE_SQUARE` against the 2.72 m outer border for full 6-DOF pose. As the gate clips the frame, the pipeline degrades deliberately — to the 1.5 m inner opening, then to a geometric construction from visible free edges, then to a bearing-only centroid — with each regime declaring its own trust level.
-- **Range is only trusted when it's earned.** Measured blob edges floor at **~16.3 px** (glow halo, minimum line width, JPEG bleed), so beyond ~50 m every gate back-projects to the same ~44–53 m. Trust is therefore tested on *measured pixel size*, never the derived range, under one continuous law: `σ_range/range = σ_px/(edge_px − floor)` — **9% at 23 m, 83% at 47 m**, diverging at the floor.
+- **Segmentation is brightness-invariant.** Gate markers pulse, so absolute HSV floors produce an unstable blob frame to frame. The shipped mask keys on **red dominance** rather than absolute brightness, closed morphologically to bridge the overlay artifacts that would otherwise sever a ring into an open arc.
+- **Non-gate red is rejected structurally, not by hue.** A real gate is a hollow, near-square ring; the ceiling arrows and the "AI-GP" banner are solid. The test is on shape, so a change in lighting can't turn signage into a gate.
+- **Pose recovery cascades by range.** A fully-visible ring solves for full 6-DOF pose against the known gate geometry. As the gate clips the frame, the pipeline degrades deliberately — to the inner opening, then to a geometric construction from whichever free edges remain, then to a bearing-only centroid — with each regime declaring its own trust level.
+- **Range is only trusted when it's earned.** Measured blob edges have a hard floor in pixels — glow halo, minimum line width, compression bleed — so past a certain distance every gate back-projects to nearly the same range. Trust is therefore tested on *measured pixel size*, never on the derived range, under a single continuous law that inflates range uncertainty as the edge approaches that floor and diverges at it.
 - **Bearing has no such floor**, so a range-floored far gate still contributes an accurate bearing. That asymmetry is what lets the near gate anchor the along-track axis while far gates resect heading — and the handover happens automatically as gates approach.
-- **Classical beat learned.** Zero-shot ML detectors (YOLO-World) produced no detections against the simulator's stylized aesthetic; classical thresholding is the shipped backend.
-- **Bounded compute.** Blobs are processed largest-first under a 25 ms wall-clock budget, so a many-gate frame can't starve the receive and control threads. Truncation only ever drops the far tail.
+- **Classical beat learned.** Zero-shot ML detectors produced no usable detections against the simulator's stylized aesthetic; a classical pipeline is the shipped backend.
+- **Bounded compute.** Blobs are processed largest-first under a fixed wall-clock budget, so a many-gate frame can't starve the receive and control threads. Truncation only ever drops the far tail.
 
-## State Estimation
+### State Estimation
 
 A 15-state error-state Kalman filter in the Solà (2017) formulation — nominal state `[p, v, q, a_b, ω_b]`, error state `[δp, δv, δθ, δa_b, δω_b]` with a body-frame attitude error.
 
 - **The accelerometer is an input, not a measurement.** There is deliberately no thrust model, no hand-scheduled trust modulation, and no hand-gained residual feedback anywhere in the filter. The only state that can absorb a specific-force error is the accel bias, and it moves solely through a covariance-weighted Kalman gain bounded by its own process noise.
 - **Exact Jacobians.** The covariance transition matrix is the true first-order Jacobian of the propagator — including the right-Jacobian factor the textbook form omits — proven against a numerical Jacobian in the test suite.
-- **Four measurement types**, each with a closed-form Jacobian and χ²-gated innovation: body-frame landmark position against a frozen 17-gate map, gate-plane normal as the attitude anchor, a **rotor-drag** pseudo-measurement (Faessler 2018) that makes velocity observable with no vision at all, and a yaw pseudo-measurement. A pre-arm at-rest routine (ZUPT, gravity levelling, gyro bias) initializes the filter on the 17.8° launch ramp.
+- **Four measurement types**, each with a closed-form Jacobian and χ²-gated innovation: body-frame landmark position against the gate map, gate-plane normal as the attitude anchor, a **rotor-drag** pseudo-measurement (Faessler 2018) that makes velocity observable with no vision at all, and a yaw pseudo-measurement. A pre-arm at-rest routine (ZUPT, gravity levelling, gyro bias) initializes the filter on the launch ramp.
 - **Reject, never force-fit.** Corrections use the Joseph form with Solà's post-injection reset. Gating is two-tier: beyond the 99.9% χ² quantile is a hard reject, while 95–99.9% inflates the measurement noise so a marginal fix is admitted only up to its validated magnitude. The state correction is never clamped — that would desynchronize the covariance from the state.
-- **Camera latency is handled by rewinding, not approximating.** Vision fixes are stamped at frame capture and arrive after the filter has integrated past that epoch. A ~1.2 s ring of state snapshots lets the filter restore the nearest snapshot, apply the update *there*, and re-propagate the buffered IMU forward (the Lynen 2013 / `ethzasl_msf` pattern) — exact, at roughly four propagate steps.
-- **Noise is measured, not tuned.** Each sighting's covariance is built from calibrated residual laws on the axes the detector actually errs along — including an attitude-rate-coupled centre wander treated as a *colored* process so a white-noise filter can't double-count it, and an independent misorientation witness: a bolted-down gate can't rotate 50° in 0.1 s, so the angle between the solved and mapped normal measures this frame's pose error directly.
+- **Camera latency is handled by rewinding, not approximating.** Vision fixes are stamped at frame capture and arrive after the filter has integrated past that epoch. A ring of state snapshots lets the filter restore the nearest snapshot, apply the update *there*, and re-propagate the buffered IMU forward (the Lynen 2013 / `ethzasl_msf` pattern) — exact, at a cost of a few propagate steps.
+- **Noise is measured, not tuned.** Each sighting's covariance is built from calibrated residual laws on the axes the detector actually errs along — including an attitude-rate-coupled centre wander treated as a *colored* process so a white-noise filter can't double-count it, and an independent misorientation witness: a bolted-down gate cannot physically rotate between frames, so the angle between the solved and mapped normal measures this frame's pose error directly.
 
-## Control
+### Control
 
-A cascaded SE(3) geometric tracking controller in the Lee et al. (2010) lineage, ported from the Round-1 client.
+A cascaded SE(3) geometric tracking controller in the Lee et al. (2010) lineage.
 
-- **Reference.** An arc-length-reparameterised cubic Hermite spline through the gate opening centres is the sole reference path.
-- **Speed governor.** A progress variable marches along the spline at `min(flat cap, curvature cap √(g·tanθ/κ), descent cap)`, previewed and rate-limited.
+- **Reference.** An arc-length-reparameterised spline through the gate opening centres is the sole reference path.
+- **Speed governor.** A progress variable marches along the spline at the most restrictive of a flat speed cap, a curvature-limited cornering cap, and a descent cap — previewed ahead of the vehicle and rate-limited so the reference can't step.
 - **Cascade.** Translational PD produces a world acceleration command, decomposed yaw-aware into roll/pitch setpoints under a tilt clamp; an attitude-P loop with feed-forward emits body rates.
-- **Plant inversion.** Body rates are pushed through the exact inverse of the *measured* plant — a nonlinear rate gain, mount rotation, and sign chain mirrored precisely against the estimator's sensor mapping so sensing and command remain true inverses. Throttle is tilt-compensated through a calibrated affine thrust map.
+- **Plant inversion.** Body rates are pushed through the exact inverse of the *measured* plant — a nonlinear rate gain, mount rotation, and sign chain mirrored precisely against the estimator's sensor mapping so sensing and command remain true inverses. Throttle is tilt-compensated through a calibrated thrust map.
 
-## Verification
+### Verification
 
 Flight accuracy is scored **only** against an independent ground-truth observer running as a separate read-only process — never against the estimator's own state.
 
-- **Offline CI gate.** Two suites (`test_paper_stack.py`, `test_eskf15.py`) plus roughly 60 standalone tests, covering numeric-vs-analytic Jacobians, covariance symmetry and positive-definiteness, reset behaviour, reduction to known cases, and NIS/NEES consistency on synthetic data.
+- **Offline CI gate.** Two test suites plus roughly 60 standalone tests, covering numeric-vs-analytic Jacobians, covariance symmetry and positive-definiteness, reset behaviour, reduction to known cases, and NIS/NEES consistency on synthetic data.
 - **Per-run consistency reporting.** Channel-by-channel NIS statistics accumulate every run — mean ≈ degrees of freedom, ~5% beyond the 95% gate for a consistent filter.
 - **Batch A/B harness.** Arm-tagged batches run from spec files with venue-health tripwires; findings accumulate as a version-controlled experiment corpus alongside the code.
 
-## Results
+### Simulator Results
 
 - **First full-course completion** with all 17 gates registered and zero collisions: **22 July 2026**, pure vision.
-- **Counted record: 17.56 s**, reached by successive tuning of the speed governor, corner authority, and per-gate aim, with the full config ladder recorded in the repo.
+- **Counted record: 17.56 s**, reached by successive tuning of the speed governor, corner authority, and per-gate aim.
 - **Estimator accuracy: ~0.8 m position RMS** against ground truth over 253 m of flight.
-- **Final qualifier standing: 7th of 3,000+ teams** — advancing to the first round of hardware trials in Costa Mesa, CA, where the stack moves from simulation onto real racing quadrotors.
+- **Final standing: 7th of 3,000+ teams**, advancing to the physical qualifier in Costa Mesa, CA.
 
-<Video src="/images/ai-grand-prix/21_second_run.mp4" caption="Full vision-only run through all 17 gates — a conservative 21 s lap, flown close to the 17.56 s counted record." />
+<Video src="/images/ai-grand-prix/21_second_run.mp4" caption="Full vision-only simulator run through all 17 gates — a conservative 21 s lap, flown close to the 17.56 s counted record." />
+
+## Phase Two — The Physical Qualifier
+
+The simulator client is the starting point, not the deliverable. It is being brought up on real drones one subsystem at a time — starting as simply as possible, and adding complexity only when a problem calls for it.
+
+### What Changes on Hardware
+
+The simulator handed over clean IMU samples, an ideal pinhole camera, and a race-status packet naming the active gate. A real drone gives none of that.
+
+- **The IMU arrives over a polled serial link** from a commercial flight controller, carrying no sensor timestamps of its own. Achieved rates are a per-run measurement, not a setting you get to assume.
+- **The camera is a real camera.** A rolling shutter and a real lens, calibrated from a ChArUco video, with distortion now carried through every PnP and every closed-form back-projection — because `(u − cₓ)/fₓ` is only a ray for an ideal lens. Mount tilt and the lever arm from the CG are measured per airframe, and each drone's tilt is solved from its own flight past ranged gates.
+- **There is no gate counter.** The client works out its own position on the course, matching each sighting to the nearest mapped opening under an uncertainty-aware test with a rule to skip ambiguous matches — a wrong association corrupts the estimate the next association depends on.
+- **The map is a prior, not truth.** Opening centres are converted from the organiser's dimensioned coordinate PDF: a metre-scale estimate on a course nobody has surveyed as built.
+- **The flight controller's own rate loops sit between the geometric law and the motors**, so the plant being inverted now has a controller inside it — and authority has to be handed from a human pilot's sticks to the autonomy in flight, and back again on demand.
+
+### The Course
+
+The organiser's course is flown twice around, with the drone starting on the ground between the last gate and the first. Two features drive the reference design: one gate is a **vertical double gate**, its upper opening flown in one direction and its lower opening flown back underneath after a vertical half-loop, and another is a **split-S**, overflown in one direction and crossed in the other. The path the controller tracks is a smooth spline through the opening centres, shaped through both of those loops so the reference stays flyable where it doubles back on itself.
+
+### The Aircraft
+
+Three airframes — Bilbo, Frodo and Gollum — each carrying an onboard GPU compute module that runs vision, estimation, guidance, control and logging entirely onboard; a commercial flight controller for stabilization and motor output; and a camera with hardware capture timestamps. Every calibration — IMU, intrinsics, tilt, lever arm, latency, hover throttle — is per drone and version-controlled, alongside a mirror of each board's deployed tree so every aircraft keeps a history.
+
+Onboard logging is a self-describing binary topic log with a single bounded asynchronous writer; any queue loss is recorded in the trailer rather than silently dropped. The flight controller's own blackbox log runs alongside it as the PID-rate authority for gyro, setpoint and motor data, tied to the companion log by a two-anchor clock mapping at arm and disarm.
+
+### Bring-Up Discipline
+
+Nothing gets built on an unverified subsystem. Compute and the flight-controller link first; then camera calibration; then flight-controller tuning and logged manual flights; then state estimation from the IMU alone, tuned on those logs; then RC-to-autonomy handover; then vision on top of the IMU-only estimator; and only then guidance and control, flown as slowly as the law allows.
+
+Two reasons for that order. **Isolation** — when the integrated system misbehaves, a verified subsystem can be ruled out instead of suspected. **Baselines** — each step leaves a measured number the next one is judged against, and the IMU-only drift on logged manual flights is the figure vision has to beat. Logged flights replay offline, so estimator tuning costs no flight time.
+
+One principle carries over from the simulator unchanged: **degrade rather than reject, and be honest about which axis is bad.** Keep the bearing and inflate the range. Demote a doubtful association rather than discard it. Carry an unexplained innovation as covariance instead of forcing it into the state.
+
+### What Flies Today
+
+These are bring-up milestones on a live campaign, not a finished racer — the stack has not yet flown the full course autonomously, and what still stands between here and that stays with the team while the qualifier is running. As of **19 September 2026**:
+
+- **Fully autonomous hover, three flights for three.** Gollum took off, held its commanded height for 30 s and landed by itself, corrected by a single gate outside the flight box; the pilot only armed, flipped the override on, and took control back after touchdown. Horizontal hold **0.15–0.19 m rms** with a worst airborne excursion of 0.41 m, roughly **1,600 gate fixes fused per run with none rejected by the filter**, no fence trip, no gate loss, no dropped log records.
+- **The perception and estimation path runs real-time onboard.** Ported to C++ against the Python as a bit-identical reference — 4,975 detections over 602 frames, zero mismatching frames, largest corner difference 0.000000 px — the detector now runs **15 ms/frame median onboard** against the Python's 99 ms, and the filter's predict step at most **0.91 ms** against 15–37 ms. Hand-carried past two gates, capture to fused fix measured **27 ms**, 25 accepted fixes/s, **83% of frames fused**.
+- **Course legs are flying.** Nine attempts in one evening reached three- to six-gate stop points, with vision steady at **24–34 accepted map fixes per second** matched against the map by gate label, the yaw handoff stepping gate to gate in order on every flying run with nothing turning early or stalling, and cross-track error held inside its corridor throughout.
+- **The start pose is measured, not assumed.** Camera pitch solved from the pad against the first gate repeated to **±0.1°** across nine consecutive runs, and the start-pose check refused a takeoff that stood more than 2 m off its mark.
+
+<Video src="/images/ai-grand-prix/onboard_gate_detection.mp4" caption="The shipping gate detector replayed over onboard camera video from a logged flight at the qualifier venue. Every published observation is drawn with the range it solved for, alongside the detections the detector withheld — so a run can be audited frame by frame rather than trusted." />
