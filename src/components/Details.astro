@@ -1,0 +1,109 @@
+---
+interface Props {
+  summary: string;
+  hint?: string;
+  open?: boolean;
+}
+
+const { summary, hint, open = false } = Astro.props;
+---
+
+<details class="disclosure" open={open}>
+  <summary class="disclosure-summary">
+    <span class="disclosure-chevron" aria-hidden="true"></span>
+    <span class="disclosure-label">{summary}</span>
+    {hint && <span class="disclosure-hint">{hint}</span>}
+  </summary>
+  <div class="disclosure-body">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .disclosure {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg-raised);
+    margin: var(--space-sm) 0;
+    overflow: hidden;
+  }
+
+  .disclosure-summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 0.7rem var(--space-md);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .disclosure-summary::-webkit-details-marker {
+    display: none;
+  }
+  .disclosure-summary:hover {
+    background: var(--color-bg-card-hover);
+  }
+  .disclosure-summary:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+  }
+
+  .disclosure-chevron {
+    flex-shrink: 0;
+    width: 0;
+    height: 0;
+    border-left: 5px solid var(--color-accent);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    transition: transform 0.2s ease;
+  }
+  .disclosure[open] .disclosure-chevron {
+    transform: rotate(90deg);
+  }
+
+  .disclosure-label {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-bright);
+    letter-spacing: 0.01em;
+  }
+
+  .disclosure-hint {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .disclosure-body {
+    padding: 0 var(--space-md) var(--space-sm);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-sm);
+  }
+
+  /* Tighten the markdown that lands inside a disclosure. */
+  .disclosure-body :global(ul) {
+    margin-bottom: 0;
+  }
+  .disclosure-body :global(li:last-child) {
+    margin-bottom: 0;
+  }
+  .disclosure-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .disclosure-chevron {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .disclosure-hint {
+      display: none;
+    }
+  }
+</style>
