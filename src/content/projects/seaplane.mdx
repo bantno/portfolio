@@ -26,6 +26,7 @@ metrics:
 conference: "AIAA AVIATION 2024"
 ---
 import Figure from '../../components/Figure.astro';
+import Gallery from '../../components/Gallery.astro';
 import Video from '../../components/Video.astro';
 
 <Video src="/images/seaplane/AHAB_Takeoff.mp4" caption="AHAB taking off during Phase 1 flight testing." />
@@ -94,7 +95,7 @@ AHAB is a proof-of-concept built to show the airframe can fly the missions the M
 - **Construction.** 3D-printed in LW-ASA, reinforced with carbon-fiber spars and fiberglass, waterproofed with marine-grade sealant and potted electronics.
 - **Changes from the conceptual design.** A V-tail for easier construction, and sponsons for improved hydrostatic stability.
 
-<Figure src="/images/seaplane/Preflight.jpg" alt="AHAB prototype during pre-flight inspection" caption="AHAB during pre-flight inspection." number={1} wide={true} />
+<Figure src="/images/seaplane/ahab-afloat-2026-10-07.jpg" alt="AHAB floating level and upright on a lake, seen from the rear quarter with both propellers and wingtip floats visible" caption="AHAB afloat during the 7 October 2026 lake test — flying hull, V-tail, and wingtip floats." number={1} wide={true} />
 
 ### Phase 1: Aerodynamic Validation
 
@@ -109,7 +110,14 @@ Phase 1 confirmed the airframe is flightworthy — minimal trim corrections, sig
 
 ### Phase 2: Hydrostatic & Hydrodynamic Validation
 
-Phase 2 validates water operations. The second prototype is fully waterproofed and hydrostatically stable; waterproofing tests and low-speed taxi runs are complete. Remaining evaluation covers hump speed, planing behavior, step ventilation, and water takeoff.
+Phase 2 validates water operations. The second prototype is fully waterproofed and hydrostatically stable. Waterproofing tests, low-speed taxi runs, planing on the step and water takeoffs have all been flown, from the first water takeoff on 27 February 2026 through the October 2026 lake tests, with spray rails and wingtip floats redesigned along the way.
+
+<Gallery columns={2} label="Water operations, April – October 2026">
+  <Figure src="/images/seaplane/ahab-v6-shoreline-2026-04-17.jpg" alt="AHAB v6 prototype sitting at the water's edge on a sandy lake shore" caption="AHAB v6 at the water's edge before the 17 April 2026 lake test." number={3} />
+  <Figure src="/images/seaplane/ahab-v6-water-taxi-2026-04-17.jpg" alt="AHAB v6 on the lake near two orange buoys" caption="AHAB v6 on the lake, 17 April 2026." number={4} />
+  <Figure src="/images/seaplane/ahab-takeoff-run-2026-10-07.jpg" alt="AHAB planing across the lake under power with a spray wake behind it" caption="Takeoff run with the hull planing, 7 October 2026 (frame from flight-test video)." number={5} />
+  <Figure src="/images/seaplane/ahab-airborne-2026-10-07.jpg" alt="AHAB airborne just above the far shoreline, with its takeoff wake still visible on the water" caption="Airborne after a water takeoff, 7 October 2026 — the takeoff wake is still visible on the surface." number={6} />
+</Gallery>
 
 ### Phase 3: Wing Rotation — Solar Tracking & Self-Righting
 
@@ -118,7 +126,11 @@ Phase 3 puts the wing-rotation mechanism to work on the water. Both of its funct
 - **Floating solar tracking.** The moored vehicle rotates its wing spanwise to aim the panels at the sun — the mechanism behind the **+203 Wh** weekly gain (**21.9%**) predicted in the conceptual design.
 - **Self-righting.** The same actuators and mechanical lock recover the vehicle from an inverted attitude, with no additional hardware.
 
-<Figure src="/images/seaplane/AHAB-before-floating-solar-tracking-test.jpg" alt="AHAB floating on the water ahead of a solar-tracking test" caption="AHAB on the water ahead of a floating solar-tracking test — the wing-rotation mechanism tilts the panels toward the sun while moored." number={3} wide={true} />
+<Figure src="/images/seaplane/ahab-wing-rotated-2026-06-02.jpg" alt="AHAB on a lakeside picnic table with both wing halves rotated to near-vertical on the pylon above the hull" caption="Wing set to its rotated position ahead of the 2 June 2026 static self-righting test." number={7} wide={true} />
+
+<Video src="/images/seaplane/ahab-self-righting-2026-10-03.mp4" caption="Self-righting on the lake, 3 October 2026 — set down inverted, the vehicle rotates its wing spanwise and rolls back upright under its own actuators." number={8} />
+
+<Figure src="/images/seaplane/AHAB-before-floating-solar-tracking-test.jpg" alt="AHAB on the ground with solar panels mounted on the wing, ahead of a floating solar-tracking test" caption="AHAB on the ground before a floating solar-tracking test, solar panels mounted on the wing — the wing-rotation mechanism tilts them toward the sun while moored." number={9} wide={true} />
 
 Remaining Phase 3 integration covers the solar-recharge system and the hydrophone winch.
 
@@ -134,9 +146,11 @@ Execute a full mission cycle — takeoff, survey, landing, recharge — to valid
 
 ## Publications
 
-**B. A. Epstein** and J. D. Rogers, "Conceptual Design of a Low-Altitude Solar Powered Seaplane for Oceanic Monitoring," *AIAA AVIATION FORUM AND ASCEND 2024*, Las Vegas, Nevada, Jul. 2024.
+**B. A. Epstein**, N. G. Trujillo, A. I. Mogge, and J. D. Rogers, "Design and Flight Demonstration of a 3D-Printed Solar-Powered Seaplane UAV for Persistent Marine Mammal Monitoring," *AIAA SCITECH 2027 Forum*, Jan. 2027 (to appear).
 
 **B. A. Epstein** and J. D. Rogers, "Optimal flight planning for marine mammal surveillance from a seaplane UAV," *AIAA Journal of Aircraft*, 2026 (in press).
+
+**B. A. Epstein** and J. D. Rogers, "Conceptual Design of a Low-Altitude Solar Powered Seaplane for Oceanic Monitoring," *AIAA AVIATION FORUM AND ASCEND 2024*, Las Vegas, Nevada, Jul. 2024.
 
 Advisor: Dr. Jonathan Rogers, Aerial Robotics and Experimental Autonomy Lab (AREAL), Georgia Institute of Technology.
 
