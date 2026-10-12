@@ -23,14 +23,15 @@ metrics:
 ---
 import ResultProof from '../../components/ResultProof.astro';
 import Video from '../../components/Video.astro';
+import Details from '../../components/Details.astro';
 
 A racing drone that flies a gate course with no GPS, no external tracking and nobody on the sticks — navigating from one camera and an IMU, the same information a human pilot flies on.
 
 <ResultProof metrics={[
   { metric: "7th of 3,000+ Teams", context: "Virtual qualifier standing — advanced to the physical round" },
   { metric: "17.56 s", context: "Best counted time on the 17-gate simulator course" },
-  { metric: "Flying on Hardware", context: "Autonomous hovers and course laps on a real racing quadrotor" },
-  { metric: "Real-Time Onboard", context: "Detection, estimation, guidance and control all in the flight loop" }
+  { metric: "~0.8 m RMS", context: "Position error against independent ground truth over a 253 m lap, no GPS" },
+  { metric: "15 ms / frame", context: "Gate detector on the drone's embedded compute, in flight" }
 ]} />
 
 <Video src="/images/ai-grand-prix/21_second_run.mp4" caption="A full autonomous lap of the simulator course — 17 gates, no GPS, no human input." />
@@ -43,9 +44,18 @@ The [AI Grand Prix](https://www.theaigrandprix.com/) is an autonomous drone raci
 
 The organisers disable GPS, attitude, position — **and the gate coordinates.** Everything the drone knows about the course, it has to see and solve for in flight.
 
-I wrote the flight software end to end: gate perception from the camera, state estimation from the camera and IMU, and the guidance and control that fly the resulting path, all running in the loop in real time, together with the offline replay and test tooling used to tune it.
+**Result: 7th of 3,000+ teams.** First clean full-course lap on 22 July 2026; best counted lap 17.56 s, all 17 gates, zero collisions, pure vision.
 
-**Result: 7th of 3,000+ teams.** Best lap 17.56 s, all 17 gates, zero collisions, pure vision.
+<Details summary="The flight stack" hint="perception, estimation, guidance, control">
+
+Every subsystem runs onboard, in the flight loop, in real time.
+
+- **Gate perception.** A real-time detector turns each camera frame into gate measurements, with an explicit confidence attached to every measurement so the estimator knows how far to trust it. It runs under a fixed per-frame compute budget, so a busy frame can never starve the control loop.
+- **State estimation.** An error-state Kalman filter fuses the raw IMU with the camera's gate measurements to recover attitude, velocity and position from scratch. Measurement noise is calibrated from data rather than hand-tuned, and every correction is statistically gated. Position held to **~0.8 m RMS** against ground truth over a 253 m lap.
+- **Guidance and control.** A geometric tracking controller flies a smooth reference through the gate openings, with a speed governor that trades lap time against cornering and descent limits. Successive tuning took the lap from a conservative 22 s to the 17.56 s record.
+- **Verification.** Flight accuracy is scored only against an independent ground-truth observer, never the estimator's own state. Two test suites plus roughly 60 standalone tests check the filter's Jacobians numerically, its covariance health and its statistical consistency; a batch A/B harness ran tuning campaigns as a version-controlled experiment corpus alongside the code.
+
+</Details>
 
 ## Phase Two — The Physical Qualifier
 
@@ -55,6 +65,20 @@ The same stack has been brought up on real racing quadrotors, one subsystem at a
 
 Where it stands, as of late September 2026:
 
-- **Fully autonomous hover.** Three flights for three: take off, hold a commanded height for 30 s and land, with the pilot touching nothing but the arm and override switches.
-- **Perception, estimation, guidance and control run in real time on the drone's own compute.**
-- **Course laps.** Autonomous gate passages are confirmed on video, and the longest autonomous flight to date entered both laps of the course and logged 17 gates before the pilot took over. The full course has not yet been completed autonomously.
+- **Fully autonomous hover, three flights for three.** Take off, hold a commanded height for 30 s and land, with the pilot touching nothing but the arm and override switches. Horizontal hold **0.15–0.19 m RMS** by the onboard estimate, with roughly **1,600 gate measurements fused per flight**.
+- **Real-time onboard.** The vision and estimation path was ported to C++ and verified bit-identical against the Python reference on logged flights. The detector runs at **15 ms/frame median** on the drone's embedded GPU module, against 99 ms in Python, delivering **24–34 accepted gate fixes per second** in flight.
+- **Course laps.** Autonomous gate passages are confirmed on video, and the longest autonomous flight to date entered both laps of the course, logging **17 gates and 195.6 m of path in 137.5 s** before the pilot took over. The full course has not yet been completed autonomously.
+
+<Details summary="What changes on hardware" hint="none of the simulator's guarantees survive">
+
+The simulator handed over clean, timestamped IMU samples, an ideal pinhole camera and a race-status feed naming the active gate. The real drone gives none of that: an IMU streamed from a commercial flight controller with no sensor timestamps, a rolling-shutter camera behind a real lens, no feed saying which gate is next, a course map converted from the organiser's drawing rather than an as-built survey, and the flight controller's own loops sitting between the control law and the motors. Control also has to pass from a human pilot's sticks to the autonomy in flight, and back on demand.
+
+</Details>
+
+<Details summary="Bring-up discipline" hint="why the order matters">
+
+Nothing gets built on an unverified subsystem. Compute and the flight-controller link first; then camera calibration; then logged manual flights; then state estimation from the IMU alone, tuned on those logs; then the handover from pilot to autonomy; then vision on top of the IMU-only estimator; and only then guidance and control, flown as slowly as the law allows.
+
+Two reasons for that order. **Isolation** — when the integrated system misbehaves, a verified subsystem can be ruled out instead of suspected. **Baselines** — each step leaves a measured number the next one is judged against. Three airframes each carry their own version-controlled calibration set, and every flight writes a self-describing onboard log that replays offline, so estimator tuning costs no flight time.
+
+</Details>
