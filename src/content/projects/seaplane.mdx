@@ -28,6 +28,7 @@ conference: "AIAA AVIATION 2024"
 import Figure from '../../components/Figure.astro';
 import Gallery from '../../components/Gallery.astro';
 import Video from '../../components/Video.astro';
+import { MDPDemo } from '../../components/react/MDPDemo';
 
 <Video src="/images/seaplane/AHAB_Takeoff.mp4" caption="AHAB taking off during Phase 1 flight testing." />
 
@@ -81,6 +82,10 @@ The vehicle must continually decide when to fly, when to rest and recharge, and 
 - **Why it beats thresholds.** The optimal policy makes non-obvious calls a fixed threshold cannot reproduce — such as resting through a sunny period to bank energy for a risky overnight segment.
 - **Monte Carlo results.** Across battery capacities, failure penalties, locations, and seasons, the optimal policy outperforms *every* threshold parameter combination — more whale sightings, lower failure rates — and adapts without location-specific tuning.
 - **Design takeaway.** Energy-optimal battery capacity is **mission-location dependent**, so battery sizing should follow the intended operating environment.
+
+Try it. The solver below is the paper's method running in your browser: pick a site, set the failure penalty, and tune the threshold policy as well as you can. Then watch it lose to the policy computed by dynamic programming on the same weather.
+
+<MDPDemo client:visible />
 
 </section>
 

@@ -1,0 +1,102 @@
+{
+  "stageMinutes": 15,
+  "missionStages": 3000,
+  "batteryWh": 300,
+  "socBinWh": 5,
+  "aircraft": {
+    "wingAreaM2": 0.66,
+    "wingSpanM": 2.0,
+    "oswald": 0.9,
+    "cd0": 0.0236,
+    "motorEff": 0.8,
+    "propEff": 0.72,
+    "installedPowerW": 4000,
+    "dryMassKg": 7.41,
+    "batterySpecificWhPerKg": 180,
+    "cruiseAltM": 300,
+    "liftoffSeconds": 8,
+    "climbSeconds": 150,
+    "descentSeconds": 180,
+    "descentPowerFraction": 0.3,
+    "airDensity": 1.19
+  },
+  "solar": {
+    "clearSkyWm2": 1150,
+    "pvAreaM2": 0.45,
+    "pvEff": 0.2
+  },
+  "crash": {
+    "floatP": 1e-05,
+    "cruiseP": 0.0001,
+    "takeoff": {
+      "a": 8.0,
+      "b": 0.5
+    },
+    "landing": {
+      "a": 7.0,
+      "b": 0.7
+    }
+  },
+  "whaleProfile2h": [
+    0,
+    0,
+    0,
+    0.05,
+    0.1,
+    0.14,
+    0.18,
+    0.24,
+    0.28,
+    0.15,
+    0.02,
+    0
+  ],
+  "sites": [
+    {
+      "id": "east-coast",
+      "name": "U.S. East Coast",
+      "lat": 35.0,
+      "clearA": 2.5,
+      "clearB": 1.6,
+      "windK": 2.0,
+      "windLambda": 5.0
+    },
+    {
+      "id": "mediterranean",
+      "name": "Mediterranean Sea",
+      "lat": 38.0,
+      "clearA": 4.0,
+      "clearB": 1.5,
+      "windK": 2.0,
+      "windLambda": 3.8
+    },
+    {
+      "id": "bristol-bay",
+      "name": "Bristol Bay, Alaska",
+      "lat": 57.0,
+      "clearA": 2.0,
+      "clearB": 3.0,
+      "windK": 2.0,
+      "windLambda": 6.5
+    },
+    {
+      "id": "hawaii",
+      "name": "Pacific near Hawaii",
+      "lat": 21.0,
+      "clearA": 3.0,
+      "clearB": 1.5,
+      "windK": 3.0,
+      "windLambda": 6.0
+    },
+    {
+      "id": "sea-of-japan",
+      "name": "Sea of Japan",
+      "lat": 40.0,
+      "clearA": 2.0,
+      "clearB": 2.0,
+      "windK": 2.0,
+      "windLambda": 4.5
+    }
+  ],
+  "startDayOfYear": 152
+}
